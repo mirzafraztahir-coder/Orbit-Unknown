@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Orbit Studio | Orbit Unknown</title>
-  <meta name="description" content="Orbit Studio is the production dashboard for Orbit Unknown: topic planning, scripts, scenes, prompts and publishing packages." />
+  <meta name="description" content="Orbit Studio is the production dashboard for Orbit Unknown: research, scripts, scenes, prompts, publishing packages and performance tracking." />
   <link rel="stylesheet" href="app.css" />
 </head>
 <body>
@@ -19,17 +19,18 @@
       </div>
       <nav class="nav-stack" aria-label="Main navigation">
         <a href="#dashboard" class="active">Dashboard</a>
-        <a href="#research">Research</a>
-        <a href="#scripts">Scripts</a>
+        <a href="#generator">Generator</a>
+        <a href="#calendar">Calendar</a>
         <a href="#production">Production</a>
         <a href="#publishing">Publishing</a>
+        <a href="#review">TikTok Review Kit</a>
         <a href="#analytics">Analytics</a>
         <a href="#settings">Settings</a>
       </nav>
       <div class="side-card">
         <span class="status-dot"></span>
-        <strong>Local MVP active</strong>
-        <p>Runs fully in browser. API adapters are prepared after provider credentials are approved.</p>
+        <strong>Working MVP active</strong>
+        <p>Browser app is live. It creates production packages now. API adapters remain off until provider credentials are approved.</p>
       </div>
     </aside>
 
@@ -37,52 +38,25 @@
       <header class="hero" id="dashboard">
         <div>
           <p class="eyebrow">AI content operating system</p>
-          <h1>Generate science shorts without rebuilding the workflow every day.</h1>
-          <p class="hero-copy">Create topic ideas, scripts, scenes, voice text, captions, thumbnail prompts and publishing metadata in one production job.</p>
+          <h1>Orbit Studio builds a complete short-video package from one click.</h1>
+          <p class="hero-copy">Generate a science topic, voice script, scene plan, AI video prompts, captions, thumbnail prompt, publishing metadata and performance record for Orbit Unknown.</p>
         </div>
         <div class="hero-actions">
           <button class="primary" id="generateToday">Generate Today's Video</button>
-          <button class="secondary" id="exportLatest">Export Latest Package</button>
+          <button class="secondary" id="exportLatest">Export Latest JSON</button>
+          <button class="secondary" id="exportText">Export Production TXT</button>
         </div>
       </header>
 
       <section class="metrics-grid" aria-label="Overview metrics">
         <article class="metric-card"><span>Total jobs</span><strong id="metricJobs">0</strong><small>Saved locally</small></article>
-        <article class="metric-card"><span>Ready packages</span><strong id="metricReady">0</strong><small>Scripts + scenes complete</small></article>
-        <article class="metric-card"><span>Target duration</span><strong id="metricDuration">35s</strong><small>Shorts/Reels format</small></article>
-        <article class="metric-card"><span>Provider status</span><strong>Manual</strong><small>API unlock pending</small></article>
+        <article class="metric-card"><span>Ready packages</span><strong id="metricReady">0</strong><small>Script + scenes complete</small></article>
+        <article class="metric-card"><span>Target duration</span><strong id="metricDuration">35s</strong><small>Shorts/Reels/TikTok format</small></article>
+        <article class="metric-card"><span>Provider status</span><strong id="metricProvider">Manual</strong><small>API unlock pending</small></article>
       </section>
 
-      <section class="workspace">
-        <div class="panel wide" id="research">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">Production queue</p>
-              <h2>Video jobs</h2>
-            </div>
-            <button class="ghost" id="clearJobs">Clear local jobs</button>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Topic</th><th>Status</th><th>Score</th><th>Duration</th><th>Created</th></tr>
-              </thead>
-              <tbody id="jobsTable"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="panel" id="settings">
-          <div class="panel-head"><h2>Brand settings</h2></div>
-          <label>Channel name<input id="settingBrand" value="Orbit Unknown" /></label>
-          <label>Handle<input id="settingHandle" value="@OrbitUnknownX" /></label>
-          <label>Target seconds<input id="settingDuration" type="number" min="20" max="60" value="35" /></label>
-          <button class="secondary full" id="saveSettings">Save settings</button>
-        </div>
-      </section>
-
-      <section class="workspace">
-        <div class="panel wide" id="scripts">
+      <section class="workspace" id="generator">
+        <div class="panel wide">
           <div class="panel-head">
             <div>
               <p class="eyebrow">Latest package</p>
@@ -94,33 +68,91 @@
             <article>
               <h3>Voice script</h3>
               <pre id="scriptBox">Click “Generate Today's Video” to create the first production package.</pre>
+              <div class="mini-actions">
+                <button class="ghost" id="copyScript">Copy script</button>
+                <button class="ghost" id="copyCaptions">Copy captions</button>
+              </div>
             </article>
             <article>
               <h3>Publishing metadata</h3>
               <pre id="metadataBox">No metadata yet.</pre>
+              <div class="mini-actions"><button class="ghost" id="copyMetadata">Copy metadata</button></div>
             </article>
           </div>
         </div>
 
-        <div class="panel" id="production">
-          <div class="panel-head"><h2>Provider adapters</h2></div>
-          <div class="adapter-card locked"><strong>Symphony API</strong><span>Awaiting allowlist/credentials</span></div>
-          <div class="adapter-card active"><strong>Manual export</strong><span>Ready now</span></div>
-          <div class="adapter-card"><strong>YouTube upload</strong><span>Prepared after OAuth</span></div>
-          <div class="adapter-card"><strong>Instagram Reels</strong><span>Prepared after Meta auth</span></div>
+        <div class="panel" id="settings">
+          <div class="panel-head"><h2>Brand settings</h2></div>
+          <label>Channel name<input id="settingBrand" value="Orbit Unknown" /></label>
+          <label>Handle<input id="settingHandle" value="@OrbitUnknownX" /></label>
+          <label>Target seconds<input id="settingDuration" type="number" min="20" max="60" value="35" /></label>
+          <label>Format<select id="settingFormat"><option>Short cinematic science</option><option>Fast fact reveal</option><option>What-if disaster science</option></select></label>
+          <button class="secondary full" id="saveSettings">Save settings</button>
         </div>
       </section>
 
       <section class="workspace">
-        <div class="panel wide">
-          <div class="panel-head"><h2>Scene plan and prompts</h2></div>
+        <div class="panel wide" id="production">
+          <div class="panel-head"><h2>Scene plan and AI video prompts</h2><span class="pill">Copy-ready</span></div>
           <div id="sceneList" class="scene-list"><div class="empty">No scenes yet.</div></div>
         </div>
-        <div class="panel" id="publishing">
-          <div class="panel-head"><h2>Next action</h2></div>
-          <p class="small-text">Generate a package, export it, then use the contents in the current manual video tool until API access is available.</p>
-          <button class="primary full" id="copyLatest">Copy latest script</button>
-          <p class="small-text muted" id="copyResult"></p>
+        <div class="panel">
+          <div class="panel-head"><h2>Provider adapters</h2></div>
+          <div class="adapter-card locked"><strong>Symphony API</strong><span>Prepared, waiting for TikTok allowlist and credentials</span></div>
+          <div class="adapter-card active"><strong>Manual export</strong><span>Ready now: copy package into video tool</span></div>
+          <div class="adapter-card"><strong>YouTube upload</strong><span>Prepared after Google OAuth</span></div>
+          <div class="adapter-card"><strong>Instagram Reels</strong><span>Prepared after Meta app authorization</span></div>
+        </div>
+      </section>
+
+      <section class="workspace" id="calendar">
+        <div class="panel wide">
+          <div class="panel-head">
+            <div><p class="eyebrow">Queue</p><h2>Production jobs</h2></div>
+            <button class="ghost" id="clearJobs">Clear local jobs</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Topic</th><th>Status</th><th>Score</th><th>Duration</th><th>Created</th></tr></thead><tbody id="jobsTable"></tbody></table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>7-day content calendar</h2></div>
+          <div id="calendarList" class="calendar-list"></div>
+        </div>
+      </section>
+
+      <section class="workspace" id="publishing">
+        <div class="panel wide">
+          <div class="panel-head"><h2>Production package</h2><span class="pill">Export-ready</span></div>
+          <pre id="packageBox">Generate a job to see the full production package.</pre>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Manual publishing steps</h2></div>
+          <ol class="steps">
+            <li>Copy script and scene prompts.</li>
+            <li>Create video in approved provider.</li>
+            <li>Add captions using caption blocks.</li>
+            <li>Use generated title, caption and hashtags.</li>
+            <li>Log performance here after publishing.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="workspace" id="review">
+        <div class="panel wide">
+          <div class="panel-head"><h2>TikTok app review kit</h2><span class="pill">Saved purpose text</span></div>
+          <pre id="reviewText"></pre>
+          <div class="mini-actions">
+            <button class="ghost" id="copyReviewText">Copy review text</button>
+            <button class="ghost" id="copyUrls">Copy URLs</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Public URLs</h2></div>
+          <div class="url-list">
+            <a href="./" target="_blank">Website</a>
+            <a href="terms.html" target="_blank">Terms</a>
+            <a href="privacy.html" target="_blank">Privacy</a>
+          </div>
+          <p class="small-text">Demo video is intentionally honest: it shows the working dashboard and does not claim unapproved TikTok/Symphony API access.</p>
         </div>
       </section>
 
