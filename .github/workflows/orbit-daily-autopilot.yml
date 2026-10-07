@@ -1,0 +1,61 @@
+name: Orbit Daily Autopilot
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 09:00 Pakistan time = 04:00 UTC
+    - cron: "0 4 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r automation/requirements.txt
+
+      - name: Generate today's package and template video
+        run: |
+          python automation/daily_autopilot.py
+
+      - name: Upload generated assets as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: orbit-daily-package
+          path: outbox/
+
+      - name: Publish to YouTube if credentials are configured
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          python automation/publish_youtube.py outbox/latest.json outbox/latest.mp4
+
+      - name: Publish to Meta platforms if credentials are configured
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+        run: |
+          python automation/publish_meta.py outbox/latest.json outbox/latest.mp4
+
+      - name: Commit publishing log
+        run: |
+          git config user.name "orbit-autopilot"
+          git config user.email "orbit-autopilot@users.noreply.github.com"
+          git add outbox || true
+          git commit -m "Orbit daily autopilot output" || echo "No changes to commit"
+          git push || true
