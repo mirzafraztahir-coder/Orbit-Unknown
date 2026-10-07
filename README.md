@@ -7,21 +7,32 @@ Live site:
 
 ## Current build
 
-The current version is a zero-dependency GitHub Pages application. It runs in the browser and saves jobs in local storage.
+The current version is a zero-dependency GitHub Pages application. It runs fully in the browser and saves jobs in local storage.
 
 ### Working now
 
-- Dashboard
+- Professional dashboard
 - Brand settings
-- Topic/package generation
+- One-click video package generation
+- 12 built-in science/space topics
+- Topic scoring and duplicate avoidance
 - Voice-ready script generator
+- Caption-block generator
 - Scene planner
-- Video prompt generator
-- Publishing metadata generator
-- JSON package export
+- AI video prompt generator
+- Thumbnail prompt generator
+- Publishing title, caption and hashtag generator
+- JSON export
+- TXT production export
 - Manual performance logging
-- Terms and Privacy pages
-- TikTok site verification file
+- 7-day content calendar
+- TikTok app review purpose text
+- Public website, Terms and Privacy pages
+- TikTok URL property verification file
+
+### Current limitation
+
+This MVP intentionally does not call TikTok/Symphony, YouTube or Instagram APIs until each provider grants the required credentials or OAuth authorization. No fake API access is claimed.
 
 ### Pending external access
 
@@ -33,8 +44,7 @@ These require account-owner authorization or provider access before real API cal
 
 ## No secrets
 
-Do not commit API keys, client secrets, tokens or passwords to this repository.
-Provider credentials should be stored later through environment variables or a secure deployment platform.
+Do not commit API keys, client secrets, tokens or passwords to this repository. Provider credentials should be stored later through environment variables or a secure deployment platform.
 
 ## Architecture direction
 
