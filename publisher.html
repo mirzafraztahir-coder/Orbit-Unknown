@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orbit Upload Station | Orbit Unknown</title>
+  <style>
+    :root{--bg:#070914;--panel:#101524;--panel2:#151c2f;--text:#eef4ff;--muted:#9ea9bd;--line:#25304a;--blue:#58a6ff;--cyan:#65e6ff;--orange:#ffad57;--green:#52d273;--red:#ff6b6b;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#1b2b55 0,#070914 34%,#05060d 100%);color:var(--text);min-height:100vh}a{color:inherit}.wrap{max-width:1180px;margin:auto;padding:30px}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:22px}.brand{display:flex;align-items:center;gap:14px}.mark{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,var(--blue),var(--orange));display:grid;place-items:center;color:#06101f;font-weight:900}.small{color:var(--muted);font-size:13px;line-height:1.55}.hero,.panel{border:1px solid var(--line);background:rgba(16,21,36,.88);border-radius:26px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.22)}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;align-items:center}.eyebrow{margin:0 0 8px;color:var(--cyan);font-size:12px;text-transform:uppercase;letter-spacing:.16em;font-weight:800}h1{font-size:42px;line-height:1.05;margin:0 0 12px}h2,h3{margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.button-row{display:flex;flex-wrap:wrap;gap:10px}.btn,button{border:0;border-radius:14px;padding:13px 16px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}.primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#06101f}.secondary{background:#1a2440;color:var(--text);border:1px solid var(--line)}.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}textarea,input{width:100%;margin-top:8px;border:1px solid var(--line);border-radius:14px;background:#0b1020;color:var(--text);padding:13px;font:inherit}textarea{min-height:160px;resize:vertical}video{width:100%;max-height:480px;border-radius:20px;background:#000;border:1px solid var(--line)}.platforms{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.platform{background:#0b1020;border:1px solid var(--line);border-radius:18px;padding:16px}.platform strong{display:block;margin-bottom:8px}.check{display:flex;gap:10px;margin:12px 0;color:var(--muted)}.check input{width:auto;margin:4px 0 0}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--cyan);font-size:12px;background:#0c1428}.notice{border-left:4px solid var(--orange);padding:14px 16px;background:rgba(255,173,87,.1);border-radius:12px;color:#ffe0b4}.result{color:var(--green);font-size:13px;margin-top:8px;min-height:20px}.footer{display:flex;justify-content:center;gap:18px;color:var(--muted);padding:28px}@media(max-width:900px){.hero,.grid,.platforms{grid-template-columns:1fr}h1{font-size:32px}.top{display:block}.button-row{margin-top:14px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand"><div class="mark">OU</div><div><strong>Orbit Upload Station</strong><div class="small">Download-to-upload cockpit for Orbit Unknown videos</div></div></div>
+      <div class="button-row"><a class="btn secondary" href="index.html">Back to Orbit Studio</a><a class="btn ghost" href="terms.html">Terms</a><a class="btn ghost" href="privacy.html">Privacy</a></div>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">No-API publishing tool</p>
+        <h1>Prepare one finished Reel and launch the upload pages fast.</h1>
+        <p class="small">This station is for the current stage: ChatGPT generates the MP4 and caption, then this page keeps the file, caption, checklist, platform links and posting records in one place. Full automatic posting is added later when platform OAuth/API publishing access is available.</p>
+      </div>
+      <div class="notice"><strong>Current mode:</strong> assisted publishing. The browser cannot silently upload to Instagram, TikTok or YouTube without their official account authorization/API permissions.</div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>1. Load finished MP4</h2>
+        <p class="small">Select the MP4 I generate for you. The file stays on your device; it is not uploaded to this website.</p>
+        <input id="videoFile" type="file" accept="video/mp4,video/webm,video/quicktime" />
+        <p class="result" id="fileStatus"></p>
+        <video id="preview" controls playsinline></video>
+      </div>
+
+      <div class="panel">
+        <h2>2. Caption package</h2>
+        <label class="small">Title<input id="title" value="What If Earth Stopped Spinning for 5 Seconds?" /></label>
+        <label class="small">Caption<textarea id="caption">POV: Earth stops spinning for 5 seconds… and physics takes it personally. 🌍💀
+Impossible questions. Real science.
+#space #science #whatif #physics #reels #shorts #orbitunknown</textarea></label>
+        <div class="button-row"><button class="primary" id="copyCaption">Copy caption</button><button class="secondary" id="saveDraft">Save draft</button></div>
+        <p class="result" id="captionStatus"></p>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:18px">
+      <div class="top" style="margin:0 0 12px"><div><p class="eyebrow">3. Upload launchers</p><h2>Open platform upload pages</h2></div><span class="pill">Use same MP4 + copied caption</span></div>
+      <div class="platforms">
+        <div class="platform"><strong>YouTube Shorts</strong><p class="small">Opens YouTube Studio upload. Use vertical MP4 and paste title/caption.</p><a class="btn primary" target="_blank" rel="noopener" href="https://www.youtube.com/upload">Open YouTube Upload</a></div>
+        <div class="platform"><strong>TikTok</strong><p class="small">Opens TikTok web upload. Select the same MP4 and paste caption.</p><a class="btn primary" target="_blank" rel="noopener" href="https://www.tiktok.com/upload">Open TikTok Upload</a></div>
+        <div class="platform"><strong>Instagram Reels</strong><p class="small">Opens Instagram. Use Create/Reel and select the same MP4.</p><a class="btn primary" target="_blank" rel="noopener" href="https://www.instagram.com/">Open Instagram</a></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>4. Posting checklist</h2>
+        <label class="check"><input type="checkbox" class="todo"/> MP4 selected and preview checked</label>
+        <label class="check"><input type="checkbox" class="todo"/> Caption copied</label>
+        <label class="check"><input type="checkbox" class="todo"/> YouTube uploaded or skipped</label>
+        <label class="check"><input type="checkbox" class="todo"/> TikTok uploaded or skipped</label>
+        <label class="check"><input type="checkbox" class="todo"/> Instagram uploaded or skipped</label>
+        <button class="secondary" id="resetChecklist">Reset checklist</button>
+      </div>
+      <div class="panel">
+        <h2>5. Save posted links</h2>
+        <label class="small">YouTube URL<input id="youtubeUrl" placeholder="Paste published Shorts URL" /></label>
+        <label class="small">TikTok URL<input id="tiktokUrl" placeholder="Paste published TikTok URL" /></label>
+        <label class="small">Instagram URL<input id="instagramUrl" placeholder="Paste published Reel URL" /></label>
+        <button class="primary" id="saveLinks">Save links</button>
+        <pre id="savedLinks" class="small" style="white-space:pre-wrap;background:#0b1020;border:1px solid var(--line);border-radius:14px;padding:12px;min-height:88px"></pre>
+      </div>
+    </section>
+
+    <footer class="footer"><span>© 2026 Orbit Unknown</span><span>Assisted publishing now • API publishing later</span></footer>
+  </div>
+  <script>
+    const $=id=>document.getElementById(id);
+    const storeKey='orbit_upload_station';
+    function load(){try{return JSON.parse(localStorage.getItem(storeKey)||'{}')}catch{return {}}}
+    function save(data){localStorage.setItem(storeKey,JSON.stringify({...load(),...data}))}
+    const data=load();
+    if(data.title) $('title').value=data.title;
+    if(data.caption) $('caption').value=data.caption;
+    ['youtubeUrl','tiktokUrl','instagramUrl'].forEach(id=>{if(data[id]) $(id).value=data[id]});
+    function renderLinks(){const d=load();$('savedLinks').textContent=JSON.stringify({youtube:d.youtubeUrl||'',tiktok:d.tiktokUrl||'',instagram:d.instagramUrl||'',saved:d.savedAt||''},null,2)}
+    renderLinks();
+    $('videoFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('preview').src=url;$('fileStatus').textContent=`Loaded: ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`;save({fileName:f.name,fileSize:f.size})});
+    $('copyCaption').addEventListener('click',async()=>{await navigator.clipboard.writeText(`${$('title').value}\n\n${$('caption').value}`);$('captionStatus').textContent='Title and caption copied.';save({title:$('title').value,caption:$('caption').value})});
+    $('saveDraft').addEventListener('click',()=>{save({title:$('title').value,caption:$('caption').value});$('captionStatus').textContent='Draft saved in this browser.'});
+    $('saveLinks').addEventListener('click',()=>{save({youtubeUrl:$('youtubeUrl').value,tiktokUrl:$('tiktokUrl').value,instagramUrl:$('instagramUrl').value,savedAt:new Date().toLocaleString()});renderLinks()});
+    $('resetChecklist').addEventListener('click',()=>document.querySelectorAll('.todo').forEach(x=>x.checked=false));
+  </script>
+</body>
+</html>
