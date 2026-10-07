@@ -1,1 +1,147 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Orbit Unknown</title><style>body{font-family:Arial,sans-serif;max-width:820px;margin:60px auto;padding:0 24px;line-height:1.65;color:#161616}h1{font-size:42px;margin-bottom:4px}nav a{margin-right:18px}a{color:#2457d6}.tag{font-size:20px;color:#555}footer{margin-top:60px;border-top:1px solid #ddd;padding-top:20px;color:#666}</style></head><body><h1>Orbit Unknown</h1><p class="tag">Impossible Questions. Real Science.</p><p>Orbit Unknown creates original educational science and space videos for social media, exploring space, physics and “What If?” questions through short-form visual storytelling.</p><nav><a href="terms.html">Terms of Service</a><a href="privacy.html">Privacy Policy</a></nav><footer>© 2026 Orbit Unknown</footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orbit Studio | Orbit Unknown</title>
+  <meta name="description" content="Orbit Studio is the production dashboard for Orbit Unknown: topic planning, scripts, scenes, prompts and publishing packages." />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="brand-mark">OU</div>
+        <div>
+          <div class="brand-name">Orbit Studio</div>
+          <div class="brand-sub">Orbit Unknown</div>
+        </div>
+      </div>
+      <nav class="nav-stack" aria-label="Main navigation">
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#research">Research</a>
+        <a href="#scripts">Scripts</a>
+        <a href="#production">Production</a>
+        <a href="#publishing">Publishing</a>
+        <a href="#analytics">Analytics</a>
+        <a href="#settings">Settings</a>
+      </nav>
+      <div class="side-card">
+        <span class="status-dot"></span>
+        <strong>Local MVP active</strong>
+        <p>Runs fully in browser. API adapters are prepared after provider credentials are approved.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="hero" id="dashboard">
+        <div>
+          <p class="eyebrow">AI content operating system</p>
+          <h1>Generate science shorts without rebuilding the workflow every day.</h1>
+          <p class="hero-copy">Create topic ideas, scripts, scenes, voice text, captions, thumbnail prompts and publishing metadata in one production job.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="primary" id="generateToday">Generate Today's Video</button>
+          <button class="secondary" id="exportLatest">Export Latest Package</button>
+        </div>
+      </header>
+
+      <section class="metrics-grid" aria-label="Overview metrics">
+        <article class="metric-card"><span>Total jobs</span><strong id="metricJobs">0</strong><small>Saved locally</small></article>
+        <article class="metric-card"><span>Ready packages</span><strong id="metricReady">0</strong><small>Scripts + scenes complete</small></article>
+        <article class="metric-card"><span>Target duration</span><strong id="metricDuration">35s</strong><small>Shorts/Reels format</small></article>
+        <article class="metric-card"><span>Provider status</span><strong>Manual</strong><small>API unlock pending</small></article>
+      </section>
+
+      <section class="workspace">
+        <div class="panel wide" id="research">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Production queue</p>
+              <h2>Video jobs</h2>
+            </div>
+            <button class="ghost" id="clearJobs">Clear local jobs</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Topic</th><th>Status</th><th>Score</th><th>Duration</th><th>Created</th></tr>
+              </thead>
+              <tbody id="jobsTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" id="settings">
+          <div class="panel-head"><h2>Brand settings</h2></div>
+          <label>Channel name<input id="settingBrand" value="Orbit Unknown" /></label>
+          <label>Handle<input id="settingHandle" value="@OrbitUnknownX" /></label>
+          <label>Target seconds<input id="settingDuration" type="number" min="20" max="60" value="35" /></label>
+          <button class="secondary full" id="saveSettings">Save settings</button>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="panel wide" id="scripts">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Latest package</p>
+              <h2 id="latestTitle">No job generated yet</h2>
+            </div>
+            <span class="pill" id="latestStatus">Waiting</span>
+          </div>
+          <div class="content-grid">
+            <article>
+              <h3>Voice script</h3>
+              <pre id="scriptBox">Click “Generate Today's Video” to create the first production package.</pre>
+            </article>
+            <article>
+              <h3>Publishing metadata</h3>
+              <pre id="metadataBox">No metadata yet.</pre>
+            </article>
+          </div>
+        </div>
+
+        <div class="panel" id="production">
+          <div class="panel-head"><h2>Provider adapters</h2></div>
+          <div class="adapter-card locked"><strong>Symphony API</strong><span>Awaiting allowlist/credentials</span></div>
+          <div class="adapter-card active"><strong>Manual export</strong><span>Ready now</span></div>
+          <div class="adapter-card"><strong>YouTube upload</strong><span>Prepared after OAuth</span></div>
+          <div class="adapter-card"><strong>Instagram Reels</strong><span>Prepared after Meta auth</span></div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="panel wide">
+          <div class="panel-head"><h2>Scene plan and prompts</h2></div>
+          <div id="sceneList" class="scene-list"><div class="empty">No scenes yet.</div></div>
+        </div>
+        <div class="panel" id="publishing">
+          <div class="panel-head"><h2>Next action</h2></div>
+          <p class="small-text">Generate a package, export it, then use the contents in the current manual video tool until API access is available.</p>
+          <button class="primary full" id="copyLatest">Copy latest script</button>
+          <p class="small-text muted" id="copyResult"></p>
+        </div>
+      </section>
+
+      <section class="panel" id="analytics">
+        <div class="panel-head"><h2>Performance monitor</h2><span class="pill">Manual input ready</span></div>
+        <div class="analytics-grid">
+          <label>Views<input id="viewsInput" type="number" placeholder="0" /></label>
+          <label>Likes<input id="likesInput" type="number" placeholder="0" /></label>
+          <label>Watch %<input id="watchInput" type="number" placeholder="0" /></label>
+          <button class="secondary" id="savePerformance">Save performance</button>
+        </div>
+        <pre id="performanceBox">No performance saved yet.</pre>
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Orbit Unknown</span>
+        <a href="terms.html">Terms</a>
+        <a href="privacy.html">Privacy</a>
+      </footer>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
