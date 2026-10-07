@@ -1,0 +1,14 @@
+{
+  "brand": "Orbit Unknown",
+  "handle": "@OrbitUnknownX",
+  "tagline": "Impossible Questions. Real Science.",
+  "target_duration_seconds": 35,
+  "language": "en",
+  "publishing": {
+    "youtube": false,
+    "instagram": false
+  },
+  "symphony": {
+    "enabled": false
+  }
+}
