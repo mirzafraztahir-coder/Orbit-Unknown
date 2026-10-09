@@ -1,0 +1,50 @@
+{
+  "kind": "youtube#video",
+  "etag": "AhqN4oOmffm3XIRckWUJc8yQPlk",
+  "id": "6TiaPHJSoDE",
+  "snippet": {
+    "publishedAt": "2026-10-09T22:37:39Z",
+    "channelId": "UCrMGOzndrGIMKSof9JVWaGQ",
+    "title": "What If a black hole passed through Earth?",
+    "description": "What if a black hole passed through Earth? \ud83c\udf0d\ud83d\ude80\n\nImpossible questions. Real science.\n#space #science #whatif #physics #shorts #orbitunknown",
+    "thumbnails": {
+      "default": {
+        "url": "https://i.ytimg.com/vi/6TiaPHJSoDE/default.jpg",
+        "width": 120,
+        "height": 90
+      },
+      "medium": {
+        "url": "https://i.ytimg.com/vi/6TiaPHJSoDE/mqdefault.jpg",
+        "width": 320,
+        "height": 180
+      },
+      "high": {
+        "url": "https://i.ytimg.com/vi/6TiaPHJSoDE/hqdefault.jpg",
+        "width": 480,
+        "height": 360
+      }
+    },
+    "channelTitle": "Orbit Unknown",
+    "tags": [
+      "orbit unknown",
+      "science",
+      "shorts",
+      "space",
+      "what if"
+    ],
+    "categoryId": "27",
+    "liveBroadcastContent": "none",
+    "localized": {
+      "title": "What If a black hole passed through Earth?",
+      "description": "What if a black hole passed through Earth? \ud83c\udf0d\ud83d\ude80\n\nImpossible questions. Real science.\n#space #science #whatif #physics #shorts #orbitunknown"
+    }
+  },
+  "status": {
+    "uploadStatus": "uploaded",
+    "privacyStatus": "public",
+    "license": "youtube",
+    "embeddable": true,
+    "publicStatsViewable": true,
+    "selfDeclaredMadeForKids": false
+  }
+}
