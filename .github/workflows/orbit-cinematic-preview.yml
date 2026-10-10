@@ -1,0 +1,30 @@
+name: Orbit Cinematic Preview (no publishing)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install renderer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg espeak-ng fonts-dejavu-core
+          python -m pip install Pillow
+      - name: Render 42-second narrated preview
+        run: python automation/cinematic_staging.py
+      - name: Validate video
+        run: |
+          test -s outbox/cinematic_test/preview.mp4
+          ffprobe -v error -show_entries stream=codec_type,width,height -of json outbox/cinematic_test/preview.mp4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orbit-cinematic-preview
+          path: outbox/cinematic_test/
+          retention-days: 7
