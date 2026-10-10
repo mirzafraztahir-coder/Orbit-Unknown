@@ -3,8 +3,12 @@ name: Orbit Daily Autopilot
 on:
   workflow_dispatch:
   schedule:
-    # 09:00 Pakistan time = 04:00 UTC
-    - cron: "0 4 * * *"
+    # 08:00 Pakistan time = 03:00 UTC
+    - cron: "0 3 * * *"
+
+concurrency:
+  group: orbit-daily-autopilot
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -12,6 +16,7 @@ permissions:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,6 +46,19 @@ jobs:
           name: orbit-daily-package
           path: outbox/
 
+      - name: Verify YouTube credentials and generated video
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          test -n "$YOUTUBE_CLIENT_ID" || { echo "Missing YOUTUBE_CLIENT_ID"; exit 1; }
+          test -n "$YOUTUBE_CLIENT_SECRET" || { echo "Missing YOUTUBE_CLIENT_SECRET"; exit 1; }
+          test -n "$YOUTUBE_REFRESH_TOKEN" || { echo "Missing YOUTUBE_REFRESH_TOKEN"; exit 1; }
+          test -s outbox/latest.mp4 || { echo "Generated video missing or empty"; exit 1; }
+          test -s outbox/latest.json || { echo "Metadata missing or empty"; exit 1; }
+          ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 outbox/latest.mp4
+
       - name: Publish to YouTube if credentials are configured
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
@@ -48,6 +66,20 @@ jobs:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
           python automation/publish_youtube.py outbox/latest.json outbox/latest.mp4
+
+      - name: Verify YouTube publication result
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("outbox/youtube_result.json")
+          if not p.is_file():
+              raise SystemExit("YouTube did not return a publishing result")
+          result = json.loads(p.read_text())
+          if not result.get("id"):
+              raise SystemExit("YouTube result lacks a video ID")
+          print("Published YouTube video ID:", result["id"])
+          PY
 
       - name: Publish to Meta platforms if credentials are configured
         env:
