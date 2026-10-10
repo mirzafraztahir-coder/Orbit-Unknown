@@ -1,0 +1,68 @@
+name: Publish Cinematic Short (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_path:
+        description: 'MP4 path in repository (for example uploads/sun_vanished.mp4)'
+        required: true
+        default: 'uploads/sun_vanished.mp4'
+      title:
+        description: 'YouTube title'
+        required: true
+        default: 'What If the Sun Vanished? | Orbit Unknown #Shorts'
+      description:
+        description: 'YouTube description'
+        required: true
+        default: 'What if our Sun suddenly disappeared? Earth would not notice for about 8 minutes and 20 seconds. Impossible Questions. Real Science. #space #science #shorts #orbitunknown'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install YouTube dependencies
+        run: pip install -r automation/requirements.txt
+      - name: Validate video and prepare metadata
+        env:
+          VIDEO_PATH: ${{ inputs.video_path }}
+          VIDEO_TITLE: ${{ inputs.title }}
+          VIDEO_DESCRIPTION: ${{ inputs.description }}
+        run: |
+          python - <<'PY'
+          import os,json,pathlib
+          path=pathlib.Path(os.environ["VIDEO_PATH"])
+          if not path.is_file() or path.suffix.lower() != ".mp4":
+              raise SystemExit(f"Missing MP4: {path}. Upload it to the repository before running this workflow.")
+          if path.stat().st_size < 100000:
+              raise SystemExit("Video unexpectedly small; refusing to publish.")
+          pathlib.Path("outbox").mkdir(exist_ok=True)
+          pathlib.Path("outbox/latest.json").write_text(json.dumps({"metadata":{"title":os.environ["VIDEO_TITLE"],"caption":os.environ["VIDEO_DESCRIPTION"],"privacyStatus":"public"}}))
+          print("Validated MP4:",path,"bytes:",path.stat().st_size)
+          PY
+      - name: Verify YouTube credentials
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          test -n "$YOUTUBE_CLIENT_ID" && test -n "$YOUTUBE_CLIENT_SECRET" && test -n "$YOUTUBE_REFRESH_TOKEN" || (echo "Missing YouTube OAuth secret" && exit 1)
+      - name: Upload to YouTube
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          VIDEO_PATH: ${{ inputs.video_path }}
+        run: python automation/publish_youtube.py outbox/latest.json "$VIDEO_PATH"
+      - name: Save upload confirmation
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-publish-confirmation
+          path: outbox/youtube_result.json
+          if-no-files-found: error
