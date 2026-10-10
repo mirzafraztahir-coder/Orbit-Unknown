@@ -54,7 +54,7 @@ def main():
  (ROOT/"script.txt").write_text(narration)
  (ROOT/"metadata.json").write_text(json.dumps({"title":"What If the Sun Vanished? | Orbit Unknown #Shorts","caption":"What happens eight minutes after the Sun disappears? #space #science #shorts","privacyStatus":"private","testOnly":True},indent=2))
  # Speech is an explicit test dependency; reject a silent render.
- run("espeak-ng","-v","en-us+m3","-s","145","-w",str(ROOT/"narration.wav"),narration)
+ run("espeak-ng","-v","en-us+m3","-s","205","-w",str(ROOT/"narration.wav"),narration)
  with wave.open(str(ROOT/"narration.wav")) as a: speech=a.getnframes()/a.getframerate()
  if speech>DURATION-1: raise RuntimeError(f"Narration too long: {speech:.1f}s")
  for i,(headline,body) in enumerate(SCENES):
