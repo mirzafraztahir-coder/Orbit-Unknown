@@ -1,25 +1,25 @@
 {
   "kind": "youtube#video",
-  "etag": "AhqN4oOmffm3XIRckWUJc8yQPlk",
-  "id": "6TiaPHJSoDE",
+  "etag": "HtqWNaURe8ed5X8X9Wygw2bb8xk",
+  "id": "HwoJq14ggWQ",
   "snippet": {
-    "publishedAt": "2026-10-09T22:37:39Z",
+    "publishedAt": "2026-10-10T04:08:38Z",
     "channelId": "UCrMGOzndrGIMKSof9JVWaGQ",
-    "title": "What If a black hole passed through Earth?",
-    "description": "What if a black hole passed through Earth? \ud83c\udf0d\ud83d\ude80\n\nImpossible questions. Real science.\n#space #science #whatif #physics #shorts #orbitunknown",
+    "title": "What If Earth stopped spinning for 5 seconds?",
+    "description": "What if Earth stopped spinning for 5 seconds? \ud83c\udf0d\ud83d\ude80\n\nImpossible questions. Real science.\n#space #science #whatif #physics #shorts #orbitunknown",
     "thumbnails": {
       "default": {
-        "url": "https://i.ytimg.com/vi/6TiaPHJSoDE/default.jpg",
+        "url": "https://i.ytimg.com/vi/HwoJq14ggWQ/default.jpg",
         "width": 120,
         "height": 90
       },
       "medium": {
-        "url": "https://i.ytimg.com/vi/6TiaPHJSoDE/mqdefault.jpg",
+        "url": "https://i.ytimg.com/vi/HwoJq14ggWQ/mqdefault.jpg",
         "width": 320,
         "height": 180
       },
       "high": {
-        "url": "https://i.ytimg.com/vi/6TiaPHJSoDE/hqdefault.jpg",
+        "url": "https://i.ytimg.com/vi/HwoJq14ggWQ/hqdefault.jpg",
         "width": 480,
         "height": 360
       }
@@ -35,8 +35,8 @@
     "categoryId": "27",
     "liveBroadcastContent": "none",
     "localized": {
-      "title": "What If a black hole passed through Earth?",
-      "description": "What if a black hole passed through Earth? \ud83c\udf0d\ud83d\ude80\n\nImpossible questions. Real science.\n#space #science #whatif #physics #shorts #orbitunknown"
+      "title": "What If Earth stopped spinning for 5 seconds?",
+      "description": "What if Earth stopped spinning for 5 seconds? \ud83c\udf0d\ud83d\ude80\n\nImpossible questions. Real science.\n#space #science #whatif #physics #shorts #orbitunknown"
     }
   },
   "status": {
