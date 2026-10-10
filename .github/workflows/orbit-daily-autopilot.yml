@@ -35,10 +35,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r automation/requirements.txt
+          pip install numpy==1.26.4
 
-      - name: Generate today's package and template video
+      - name: Generate cinematic video (fail closed if assets are missing)
         run: |
-          python automation/daily_autopilot.py
+          python automation/cinematic_slideshow.py
+          test -s outbox/latest.json || { echo "QUALITY GATE: metadata package missing"; exit 1; }
 
       - name: Upload generated assets as workflow artifact
         uses: actions/upload-artifact@v4
