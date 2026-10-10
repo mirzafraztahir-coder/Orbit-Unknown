@@ -96,3 +96,7 @@ if __name__=="__main__":
     voice=folder/"narration.wav"
     if not voice.is_file():raise SystemExit("QUALITY GATE: documentary narration WAV missing")
     render(topic,scenes,voice)
+    title_path=folder/"title.txt"
+    title=title_path.read_text(encoding="utf-8").strip() if title_path.is_file() else "What If Earth Had Rings Like Saturn?"
+    package={"topic":title,"script":" ".join(scenes),"metadata":{"title":title,"caption":title+" #space #science #shorts #orbitunknown","privacyStatus":"public"},"scenes":[{"time":str(i*8)+"-"+str((i+1)*8)+"s","text":line} for i,line in enumerate(scenes)]}
+    (OUT/"latest.json").write_text(json.dumps(package,indent=2),encoding="utf-8")
