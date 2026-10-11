@@ -1,110 +1,136 @@
 name: Orbit Cinematic Build
-
 on:
   workflow_dispatch:
+    inputs:
+      slot:
+        description: "Which edition should be produced?"
+        required: true
+        type: choice
+        default: evening
+        options: [morning, evening]
   schedule:
-    # 07:00 Pakistan time = 02:00 UTC.
-    - cron: "0 2 * * *"
+    - cron: "0,40 2 * * *"    # 07:00 & 07:40 Pakistan time
+    - cron: "0,40 10 * * *"   # 15:00 & 15:40 Pakistan time
   push:
     branches: [main]
     paths:
-      - "automation/space_cinematic_v2.py"
-      - ".github/workflows/orbit-cinematic-build.yml"
-
+      - automation/space_cinematic_v2.py
+      - automation/extra_episodes.py
+      - .github/workflows/orbit-cinematic-build.yml
 permissions:
-  contents: write
-
+  contents: read
+  actions: read
 concurrency:
-  group: orbit-cinematic-build
+  group: orbit-production-${{ github.event_name == 'schedule' && github.event.schedule || github.run_id }}
   cancel-in-progress: false
-
 jobs:
   produce:
-    name: Generate and verify cinematic short (no publishing)
+    name: Create and verify separate 40-second science video
     runs-on: ubuntu-latest
-    timeout-minutes: 48
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve Pakistan-date morning or evening edition
+        id: edition
+        env:
+          EVENT_TYPE: ${{ github.event_name }}
+          EVENT_CRON: ${{ github.event.schedule }}
+          INPUT_SLOT: ${{ inputs.slot }}
+        run: |
+          set -euo pipefail
+          DATE="$(TZ=Asia/Karachi date +%F)"
+          case "$EVENT_TYPE" in
+            schedule)
+              case "$EVENT_CRON" in
+                "0,40 2 * * *") SLOT=morning ;;
+                "0,40 10 * * *") SLOT=evening ;;
+                *) echo "::error::Unknown production schedule"; exit 1 ;;
+              esac ;;
+            workflow_dispatch) SLOT="$INPUT_SLOT" ;;
+            push) SLOT=evening ;;
+            *) echo "::error::Unsupported event"; exit 1 ;;
+          esac
+          case "$SLOT" in morning|evening) ;; *) echo "::error::Invalid slot"; exit 1 ;; esac
+          echo "slot=$SLOT" >> "$GITHUB_OUTPUT"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "Producing: $DATE $SLOT"
+      - name: Skip redundant scheduled build if its artifact already exists
+        id: duplicate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_TYPE: ${{ github.event_name }}
+          SLOT: ${{ steps.edition.outputs.slot }}
+          DATE: ${{ steps.edition.outputs.date }}
+        run: |
+          set -euo pipefail
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          if [ "$EVENT_TYPE" = schedule ]; then
+            PREFIX="orbit-ready-$DATE-$SLOT-"
+            if gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" --jq '.artifacts[] | select(.expired == false) | .name' | grep -Fq "$PREFIX"; then
+              echo "Edition already prepared. Avoiding unnecessary rerender."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
       - uses: actions/setup-python@v5
+        if: steps.duplicate.outputs.skip == 'false'
         with:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: automation/requirements.txt
-      - name: Install video software and narration dependencies
+      - name: Install cinematic audio/video dependencies
+        if: steps.duplicate.outputs.skip == 'false'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg fonts-dejavu-core
           python -m pip install --upgrade pip
           pip install -r automation/requirements.txt "numpy==1.26.4" "edge-tts>=6.1,<8"
-      - name: Generate five unique NASA scene images, narrated 40s MP4, and captions
-        id: generate
+      - name: Make five independent cinematic scenes, narration, soundtrack and captions
+        if: steps.duplicate.outputs.skip == 'false'
+        id: produce
         env:
+          ORBIT_SLOT: ${{ steps.edition.outputs.slot }}
           PYTHONUNBUFFERED: "1"
-        run: |
-          python automation/space_cinematic_v2.py
-      - name: Verify complete today's media package (does not publish)
+        run: python automation/space_cinematic_v2.py
+      - name: Verify today's correct edition with exact MP4 checksum
+        if: steps.duplicate.outputs.skip == 'false'
         id: verify
+        env:
+          ORBIT_SLOT: ${{ steps.edition.outputs.slot }}
         run: |
           python - <<'PY'
-          import json, os, hashlib
+          import hashlib,json,os
+          from datetime import datetime,timedelta,timezone
           from pathlib import Path
-          from datetime import datetime, timedelta, timezone
-          pkt = timezone(timedelta(hours=5))
-          today = datetime.now(pkt).date().isoformat()
-          meta = json.loads(Path("outbox/latest.json").read_text())
-          qa = json.loads(Path("outbox/quality_report.json").read_text())
-          video = Path("outbox/latest.mp4")
-          assert meta["edition_date_pkt"] == today, "Stale metadata date"
-          assert qa["edition_date_pkt"] == today, "Stale quality report"
-          assert qa["status"] == "technical_checks_passed"
-          assert qa["scene_count"] == 5
-          assert video.stat().st_size > 350000
-          assert hashlib.sha256(video.read_bytes()).hexdigest() == qa["sha256"], "Hash mismatch"
-          print("VERIFIED EDITION:", today, meta["metadata"]["title"], "bytes:", video.stat().st_size)
+          day=datetime.now(timezone(timedelta(hours=5))).date().isoformat()
+          slot=os.environ["ORBIT_SLOT"]
+          meta=json.loads(Path("outbox/latest.json").read_text())
+          qa=json.loads(Path("outbox/quality_report.json").read_text())
+          video=Path("outbox/latest.mp4")
+          assert (meta["edition_date_pkt"],meta["slot"])==(day,slot)
+          assert (qa["edition_date_pkt"],qa["slot"])==(day,slot)
+          assert qa["status"]=="technical_checks_passed" and qa["scene_count"]==5
+          assert video.stat().st_size>350000
+          assert hashlib.sha256(video.read_bytes()).hexdigest()==qa["sha256"]
+          print("VERIFIED",meta["edition_id"],meta["topic"])
           PY
-      - name: Save verified video for 08:00 publishing workflow
+      - name: Save the separately validated media for the proper publishing slot
+        if: steps.duplicate.outputs.skip == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: orbit-ready-${{ github.run_id }}
+          name: orbit-ready-${{ steps.edition.outputs.date }}-${{ steps.edition.outputs.slot }}-${{ github.run_id }}
           path: |
             outbox/latest.mp4
             outbox/latest.json
             outbox/quality_report.json
             outbox/nasa_credits.json
-          retention-days: 5
+          retention-days: 7
           if-no-files-found: error
-      - name: Commit build status for remote verification
-        # This diagnostic step must never fail an already validated video artifact.
-        continue-on-error: true
+      - name: Summarize build for diagnosis
         if: always()
         env:
-          GENERATE_OUTCOME: ${{ steps.generate.outcome }}
-          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
-          JOB_STATUS: ${{ job.status }}
-          RUN_ID: ${{ github.run_id }}
+          SLOT: ${{ steps.edition.outputs.slot }}
+          DAY: ${{ steps.edition.outputs.date }}
+          STATUS: ${{ steps.produce.outcome }}
+          QA: ${{ steps.verify.outcome }}
         run: |
-          mkdir -p ops
-          python - <<'PY'
-          import datetime,json,os
-          from pathlib import Path
-          now=datetime.datetime.now(datetime.timezone.utc)
-          report={"run_id":os.getenv("RUN_ID"),"utc":now.isoformat(),
-                  "date_pkt":(now+datetime.timedelta(hours=5)).date().isoformat(),
-                  "status":os.getenv("JOB_STATUS"),"generation":os.getenv("GENERATE_OUTCOME"),
-                  "verification":os.getenv("VERIFY_OUTCOME"),
-                  "title":None}
-          p=Path("outbox/latest.json")
-          if p.is_file():
-              try: report["title"]=json.loads(p.read_text()).get("topic")
-              except Exception: pass
-          Path("ops/latest_build.json").write_text(json.dumps(report,indent=2)+"\n")
-          print("BUILD STATUS:",json.dumps(report))
-          PY
-          git config user.name "orbit-autopilot"
-          git config user.email "orbit-autopilot@users.noreply.github.com"
-          git add ops/latest_build.json
-          git commit -m "Record latest cinematic production status" || true
-          # Rendered assets modify tracked outbox files; stash them before rebasing status commit.
-          git stash push -m "Temporary rendered video assets" || true
-          git pull --rebase origin main
-          git push origin HEAD:main || echo "Diagnostic status push conflicted; video artifact remains valid"
+          echo "Orbit Unknown build: $DAY $SLOT / rendered=$STATUS / QA=$QA" >> "$GITHUB_STEP_SUMMARY"
