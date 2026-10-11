@@ -6,10 +6,10 @@ on:
     types: [completed]
     branches: [main]
   schedule:
-    # 08:00 PKT; retry 08:20 and 08:40 if the build is late.
-    - cron: "0,20,40 3 * * *"
-    # Emergency recovery if production is delayed; never repost a completed day.
-    - cron: "0,30 4 * * *"
+    # Primary publication: 09:45 Pakistan time = 04:45 UTC.
+    - cron: "45 4 * * *"
+    # Recovery attempts at 10:05 and 10:25 PKT if YouTube did not confirm success.
+    - cron: "5,25 5 * * *"
 permissions:
   contents: write
   actions: read
@@ -18,20 +18,20 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish-verified-edition:
-    # A successful late build can publish immediately after 08:00 PKT.
+    # A successful late build can publish immediately after 09:45 PKT.
     # Earlier builds wait for the scheduled 08:00 PKT publishing window.
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Delay workflow-triggered uploads until 08:00 PKT
+      - name: Delay workflow-triggered uploads until 09:45 PKT
         id: opening
         run: |
           NOW="$(TZ=Asia/Karachi date +%H%M)"
-          if [ "${{ github.event_name }}" = "workflow_run" ] && [ "$NOW" -lt 0800 ]; then
+          if [ "${{ github.event_name }}" = "workflow_run" ] && [ "$NOW" -lt 0945 ]; then
             echo "too_early=true" >> "$GITHUB_OUTPUT"
-            echo "Cinematic build finished early; publication waits until 08:00 PKT."
+            echo "Cinematic build finished early; publication waits until 09:45 PKT."
           else
             echo "too_early=false" >> "$GITHUB_OUTPUT"
           fi
