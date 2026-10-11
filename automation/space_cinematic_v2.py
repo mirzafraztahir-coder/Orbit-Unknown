@@ -11,7 +11,8 @@ import random
 import re
 import subprocess
 import wave
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
+from extra_episodes import EXTRA_TOPICS
 from io import BytesIO
 from pathlib import Path
 
@@ -108,6 +109,8 @@ TOPICS = [
     ]}
 ]
 
+TOPICS.extend(EXTRA_TOPICS)
+
 def log(message):
     print(message, flush=True)
 
@@ -118,11 +121,18 @@ def command(args, capture=False):
 
 def choose_today():
     dt = datetime.now(PKT).date()
-    forced = os.environ.get("ORBIT_TEST_TOPIC")
-    topic = next((t for t in TOPICS if t["slug"] == forced), None) if forced else TOPICS[dt.toordinal() % len(TOPICS)]
-    if topic is None:
-        raise RuntimeError("Unknown ORBIT_TEST_TOPIC")
-    return dt.isoformat(), topic
+    slot = os.environ.get("ORBIT_SLOT", "").strip().lower()
+    if slot not in ("morning", "evening"):
+        raise RuntimeError("ORBIT_SLOT must be morning or evening; refusing ambiguous production")
+    # Each slot consumes one distinct episode. Reserve the original Sun Vanished
+    # episode as the reference movie, not as a recycled upload.
+    available = [ep for ep in TOPICS if ep["slug"] != "sun-vanished"]
+    days = (dt - date(2026, 10, 11)).days
+    ordinal = 2 * days + (0 if slot == "morning" else 1)
+    if ordinal < 0 or ordinal >= len(available):
+        raise RuntimeError("Unique topics exhausted: add original episodes; never silently repeat videos.")
+    topic = available[ordinal]
+    return dt.isoformat(), topic, slot
 
 def get_json(url, **kwargs):
     r = SESSION.get(url, timeout=TIMEOUT, **kwargs)
@@ -324,12 +334,12 @@ def technical_gate(video,shots,meta):
             "status":"technical_checks_passed"}
 
 def main():
-    edition,topic=choose_today()
+    edition,topic,slot=choose_today()
     ROOT.mkdir(exist_ok=True)
     work=ROOT/"working";work.mkdir(exist_ok=True)
     beats=topic["beats"]
     ids=set();hashes=set();photos=[];credits=[]
-    log(f"Orbit Unknown edition={edition} topic={topic['title']}")
+    log(f"Orbit Unknown edition={edition} slot={slot} topic={topic['title']}")
     for i,(_,caption,query) in enumerate(beats,1):
         log(f"Retrieving independent NASA scene {i}: {query}")
         img,credit=fetch_photo(query,ids,hashes,work,i)
@@ -342,7 +352,7 @@ def main():
     score_and_voice(beats,work,work/"final_audio.wav")
     video=render_video(photos,[b[1] for b in beats],work)
     credit_lines="\n".join(f"Scene {i}: NASA Image Library ID {x['nasa_id']} ({x['title'][:80]})" for i,x in enumerate(credits,1))
-    package={"edition_date_pkt":edition,"topic":topic["title"],"slug":topic["slug"],
+    package={"edition_date_pkt":edition,"edition_id":edition+"-"+slot,"slot":slot,"topic":topic["title"],"slug":topic["slug"],
              "script":" ".join(b[0] for b in beats),
              "metadata":{"title":topic["title"][:100],
                          "caption":topic["title"]+"\n\nImpossible Questions. Real Science.\n"+
@@ -355,6 +365,8 @@ def main():
     (ROOT/"latest.json").write_text(json.dumps(package,indent=2),encoding="utf-8")
     verification=technical_gate(video,credits,package)
     verification["edition_date_pkt"]=edition
+    verification["edition_id"]=edition+"-"+slot
+    verification["slot"]=slot
     (ROOT/"quality_report.json").write_text(json.dumps(verification,indent=2))
     (ROOT/"nasa_credits.json").write_text(json.dumps(credits,indent=2))
     log("QUALITY GATE PASSED: "+json.dumps(verification))
