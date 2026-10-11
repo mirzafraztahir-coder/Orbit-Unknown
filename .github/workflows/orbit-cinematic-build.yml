@@ -74,6 +74,8 @@ jobs:
           retention-days: 5
           if-no-files-found: error
       - name: Commit build status for remote verification
+        # This diagnostic step must never fail an already validated video artifact.
+        continue-on-error: true
         if: always()
         env:
           GENERATE_OUTCOME: ${{ steps.generate.outcome }}
@@ -105,4 +107,4 @@ jobs:
           # Rendered assets modify tracked outbox files; stash them before rebasing status commit.
           git stash push -m "Temporary rendered video assets" || true
           git pull --rebase origin main
-          git push origin HEAD:main
+          git push origin HEAD:main || echo "Diagnostic status push conflicted; video artifact remains valid"
