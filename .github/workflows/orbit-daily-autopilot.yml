@@ -48,7 +48,7 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Download last successful cinematic build
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -65,19 +65,19 @@ jobs:
           test -s outbox/latest.json
           test -s outbox/quality_report.json
       - uses: actions/setup-python@v5
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         with:
           python-version: "3.11"
       - name: Install YouTube dependencies
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         run: pip install -r automation/requirements.txt
       - name: Ensure media verification utilities are available
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         run: |
           command -v gh
           command -v ffprobe || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
       - name: Validate media, today's date, and topic uniqueness
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         run: |
           python - <<'PY'
           import hashlib,json,subprocess,datetime
@@ -105,7 +105,7 @@ jobs:
           print("QUALITY GATE PASSED", pkg["topic"])
           PY
       - name: Require valid YouTube credentials
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
@@ -115,14 +115,14 @@ jobs:
           test -n "$YOUTUBE_CLIENT_SECRET"
           test -n "$YOUTUBE_REFRESH_TOKEN"
       - name: Publish the approved Short to YouTube
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: python automation/publish_youtube.py outbox/latest.json outbox/latest.mp4
       - name: Save YouTube ID and prevent subsequent duplicate uploads
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         run: |
           python - <<'PY'
           import json,datetime
@@ -149,7 +149,7 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
       - name: Archive successful YouTube receipt
-        if: steps.guard.outputs.skip != 'true'
+        if: steps.guard.outputs.skip == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: orbit-published-${{ github.run_id }}
