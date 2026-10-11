@@ -1,160 +1,264 @@
 name: Orbit Daily Autopilot
 on:
   workflow_dispatch:
+    inputs:
+      slot:
+        description: "Morning or evening Short to publish"
+        required: true
+        type: choice
+        default: evening
+        options: [morning, evening]
   workflow_run:
     workflows: ["Orbit Cinematic Build"]
     types: [completed]
     branches: [main]
   schedule:
-    # Primary publication: 09:45 Pakistan time = 04:45 UTC.
+    # 09:45 AM PKT, recovery 10:00, 10:25 and 10:55.
     - cron: "45 4 * * *"
-    # Recovery attempts at 10:05 and 10:25 PKT if YouTube did not confirm success.
-    - cron: "5,25 5 * * *"
+    - cron: "0,25,55 5 * * *"
+    # 06:00 PM PKT, recovery 18:20, 18:40, 19:00, 20:00 and 21:00.
+    - cron: "0,20,40 13 * * *"
+    - cron: "0 14,15,16 * * *"
 permissions:
   contents: write
   actions: read
 concurrency:
   group: orbit-youtube-daily-publish
   cancel-in-progress: false
+
 jobs:
   publish-verified-edition:
-    # A successful late build can publish immediately after 09:45 PKT.
-    # Earlier builds wait for the scheduled 08:00 PKT publishing window.
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Delay workflow-triggered uploads until 09:45 PKT
-        id: opening
+
+      - name: Select requested edition and enforce publishing opening time
+        id: edition
+        env:
+          EVENT_TYPE: ${{ github.event_name }}
+          EVENT_CRON: ${{ github.event.schedule }}
+          CHOSEN_SLOT: ${{ inputs.slot }}
+          BUILD_ID: ${{ github.event.workflow_run.id }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          NOW="$(TZ=Asia/Karachi date +%H%M)"
-          if [ "${{ github.event_name }}" = "workflow_run" ] && [ "$NOW" -lt 0945 ]; then
-            echo "too_early=true" >> "$GITHUB_OUTPUT"
-            echo "Cinematic build finished early; publication waits until 09:45 PKT."
+          set -euo pipefail
+          DAY="$(TZ=Asia/Karachi date +%F)"
+          CLOCK="$(TZ=Asia/Karachi date +%H%M)"
+          SLOT=""
+          if [ "$EVENT_TYPE" = schedule ]; then
+            case "$EVENT_CRON" in
+              "45 4 * * *"|"0,25,55 5 * * *") SLOT=morning ;;
+              "0,20,40 13 * * *"|"0 14,15,16 * * *") SLOT=evening ;;
+              *) echo "::error::Unexpected publishing schedule"; exit 1 ;;
+            esac
+          elif [ "$EVENT_TYPE" = workflow_dispatch ]; then
+            SLOT="$CHOSEN_SLOT"
+          elif [ "$EVENT_TYPE" = workflow_run ]; then
+            NAMES="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$BUILD_ID/artifacts" --jq '.artifacts[].name')"
+            if echo "$NAMES" | grep -Fq "orbit-ready-$DAY-morning-"; then SLOT=morning; fi
+            if echo "$NAMES" | grep -Fq "orbit-ready-$DAY-evening-"; then SLOT=evening; fi
           else
-            echo "too_early=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Unsupported publication event"
+            exit 1
           fi
-      - name: Guard against duplicate publication today
-        if: steps.opening.outputs.too_early != 'true'
-        id: guard
-        run: |
-          TODAY="$(TZ=Asia/Karachi date +%F)"
-          echo "today=$TODAY" >> "$GITHUB_OUTPUT"
-          if [ -s "published/$TODAY.json" ]; then
-            echo "Already published $TODAY; skipping"
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
+          case "$SLOT" in
+            morning|evening) ;;
+            "") echo "No qualifying new cinematic artifact from this event; skipping." ;;
+            *) echo "::error::Unrecognized slot"; exit 1 ;;
+          esac
+          if [ "$SLOT" = morning ] && [ "$CLOCK" -lt 0945 ]; then
+            echo "Morning publication opens at 09:45 PKT; not early."
+            SLOT=""
           fi
-      - name: Download last successful cinematic build
-        if: steps.guard.outputs.skip == 'false'
+          if [ "$SLOT" = evening ] && [ "$CLOCK" -lt 1800 ]; then
+            echo "Evening publication opens at 18:00 PKT; not early."
+            SLOT=""
+          fi
+          echo "date=$DAY" >> "$GITHUB_OUTPUT"
+          echo "slot=$SLOT" >> "$GITHUB_OUTPUT"
+          if [ -z "$SLOT" ]; then echo "eligible=false" >> "$GITHUB_OUTPUT"; else echo "eligible=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Prevent duplicate upload for this date and slot
+        if: steps.edition.outputs.eligible == 'true'
+        id: duplicate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DAY: ${{ steps.edition.outputs.date }}
+          SLOT: ${{ steps.edition.outputs.slot }}
+        run: |
+          set -euo pipefail
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          if [ -s "published/$DAY-$SLOT.json" ] || { [ "$SLOT" = morning ] && [ -s "published/$DAY.json" ]; }; then
+            echo "YouTube already confirmed this edition. No duplicate upload."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Protect against a video already uploaded but whose Git receipt push failed.
+          PRIOR="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" --jq '.artifacts[] | select(.expired == false) | .name' | grep -F "orbit-published-$DAY-$SLOT-" | head -n 1 || true)"
+          if [ -n "$PRIOR" ]; then
+            OLD_ID="$(printf '%s' "$PRIOR" | awk -F- '{print $NF}')"
+            mkdir -p recovered
+            gh run download "$OLD_ID" --repo "$GITHUB_REPOSITORY" --name "$PRIOR" --dir recovered
+            if [ -s "recovered/published/$DAY-$SLOT.json" ]; then
+              echo "YouTube already accepted this edition; recovered the receipt and blocked duplicate upload."
+              mkdir -p published
+              cp "recovered/published/$DAY-$SLOT.json" "published/$DAY-$SLOT.json"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              git config user.name "orbit-autopilot"
+              git config user.email "orbit-autopilot@users.noreply.github.com"
+              git add published/
+              git commit -m "Recover existing Orbit YouTube receipt" || true
+              git pull --rebase origin main || true
+              git push origin HEAD:main || true
+              exit 0
+            fi
+            echo "::error::Prior uploaded receipt archive exists but could not be read; refusing possible duplicate."
+            exit 1
+          fi
+
+      - name: Find today's latest fully verified media for exactly this slot
+        if: steps.duplicate.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DAY: ${{ steps.edition.outputs.date }}
+          SLOT: ${{ steps.edition.outputs.slot }}
         run: |
           set -euo pipefail
           mkdir -p outbox
           rm -f outbox/latest.mp4 outbox/latest.json outbox/quality_report.json outbox/youtube_result.json
-          RUN_ID="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/orbit-cinematic-build.yml/runs?status=completed&per_page=40" --jq '.workflow_runs[] | select(.conclusion == "success" and .head_branch == "main") | .id' | head -n 1)"
-          if [ -z "$RUN_ID" ]; then
-            echo "::error::No completed successful cinematic build. Will retry next slot."
+          PREFIX="orbit-ready-$DAY-$SLOT-"
+          ARTIFACT="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" --jq '.artifacts[] | select(.expired == false) | .name' | grep -F "$PREFIX" | head -n 1 || true)"
+          if [ -z "$ARTIFACT" ]; then
+            echo "::error::No validated $DAY $SLOT video. Retrying at the next scheduled slot."
             exit 1
           fi
-          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "orbit-ready-$RUN_ID" --dir outbox
+          RUN_ID="$(printf '%s' "$ARTIFACT" | awk -F- '{print $NF}')"
+          echo "Downloading $ARTIFACT from run $RUN_ID"
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT" --dir outbox
           test -s outbox/latest.mp4
           test -s outbox/latest.json
           test -s outbox/quality_report.json
+
       - uses: actions/setup-python@v5
-        if: steps.guard.outputs.skip == 'false'
+        if: steps.duplicate.outputs.skip == 'false'
         with:
           python-version: "3.11"
-      - name: Install YouTube dependencies
-        if: steps.guard.outputs.skip == 'false'
-        run: pip install -r automation/requirements.txt
-      - name: Ensure media verification utilities are available
-        if: steps.guard.outputs.skip == 'false'
+      - name: Install required YouTube and media validation tools
+        if: steps.duplicate.outputs.skip == 'false'
         run: |
-          command -v gh
+          pip install -r automation/requirements.txt
           command -v ffprobe || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
-      - name: Validate media, today's date, and topic uniqueness
-        if: steps.guard.outputs.skip == 'false'
+      - name: Verify date, slot, uniqueness, duration, voice/music stream and video checksum
+        if: steps.duplicate.outputs.skip == 'false'
+        env:
+          ORBIT_SLOT: ${{ steps.edition.outputs.slot }}
         run: |
           python - <<'PY'
-          import hashlib,json,subprocess,datetime
+          import datetime,hashlib,json,os,subprocess
           from pathlib import Path
-          today=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5))).date()
+          day=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5))).date()
+          slot=os.environ["ORBIT_SLOT"]
           pkg=json.loads(Path("outbox/latest.json").read_text())
-          report=json.loads(Path("outbox/quality_report.json").read_text())
+          qa=json.loads(Path("outbox/quality_report.json").read_text())
           vid=Path("outbox/latest.mp4")
-          if pkg.get("edition_date_pkt")!=today.isoformat() or report.get("edition_date_pkt")!=today.isoformat():
-              raise SystemExit("QUALITY GATE: stale edition; not uploading")
-          if report.get("status")!="technical_checks_passed" or report.get("scene_count")!=5:
-              raise SystemExit("QUALITY GATE: no validated independent images")
-          if hashlib.sha256(vid.read_bytes()).hexdigest()!=report.get("sha256"):
-              raise SystemExit("QUALITY GATE: video SHA256 changed")
+          for obj in (pkg,qa):
+              if (obj.get("edition_date_pkt"),obj.get("slot")) != (day.isoformat(),slot):
+                  raise SystemExit("QUALITY GATE: mismatched date/slot; refusing wrong or old video")
+          if qa.get("status")!="technical_checks_passed" or qa.get("scene_count")!=5:
+              raise SystemExit("QUALITY GATE: independent scene or video validation missing")
+          if hashlib.sha256(vid.read_bytes()).hexdigest()!=qa.get("sha256"):
+              raise SystemExit("QUALITY GATE: video checksum mismatch")
           info=json.loads(subprocess.check_output(["ffprobe","-v","error","-show_streams","-show_format","-of","json",str(vid)]))
           video=next((s for s in info["streams"] if s["codec_type"]=="video"),None)
           audio=next((s for s in info["streams"] if s["codec_type"]=="audio"),None)
           if not video or not audio or (video["width"],video["height"])!=(720,1280):
-              raise SystemExit("QUALITY GATE: wrong format or missing audio")
-          if abs(float(info["format"]["duration"])-40)>.5:
-              raise SystemExit("QUALITY GATE: invalid duration")
-          yesterday=Path("published")/((today-datetime.timedelta(days=1)).isoformat()+".json")
-          if yesterday.is_file() and json.loads(yesterday.read_text()).get("topic")==pkg["topic"]:
-              raise SystemExit("QUALITY GATE: topic already published yesterday")
-          print("QUALITY GATE PASSED", pkg["topic"])
+              raise SystemExit("QUALITY GATE: wrong resolution or missing audio")
+          if abs(float(info["format"]["duration"])-40)>0.5:
+              raise SystemExit("QUALITY GATE: wrong duration")
+          for other in Path("published").glob("*.json"):
+              try:
+                  existing=json.loads(other.read_text())
+              except (ValueError,UnicodeError):
+                  continue
+              if existing.get("topic")==pkg.get("topic"):
+                  raise SystemExit("QUALITY GATE: this science topic was already published in "+other.name)
+          if not pkg.get("metadata",{}).get("title") or len(pkg.get("scenes",[]))!=5:
+              raise SystemExit("QUALITY GATE: missing title or five narrative scenes")
+          print("APPROVED FOR YOUTUBE:",pkg["edition_id"],pkg["topic"])
           PY
-      - name: Require valid YouTube credentials
-        if: steps.guard.outputs.skip == 'false'
+      - name: Require the existing working YouTube OAuth connection
+        if: steps.duplicate.outputs.skip == 'false'
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
-          test -n "$YOUTUBE_CLIENT_ID"
-          test -n "$YOUTUBE_CLIENT_SECRET"
-          test -n "$YOUTUBE_REFRESH_TOKEN"
-      - name: Publish the approved Short to YouTube
-        if: steps.guard.outputs.skip == 'false'
+          test -n "$YOUTUBE_CLIENT_ID" || { echo "::error::YouTube client ID missing"; exit 1; }
+          test -n "$YOUTUBE_CLIENT_SECRET" || { echo "::error::YouTube client secret missing"; exit 1; }
+          test -n "$YOUTUBE_REFRESH_TOKEN" || { echo "::error::YouTube refresh token missing"; exit 1; }
+      - name: Publish only this verified MP4 to YouTube
+        if: steps.duplicate.outputs.skip == 'false'
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: python automation/publish_youtube.py outbox/latest.json outbox/latest.mp4
-      - name: Save YouTube ID and prevent subsequent duplicate uploads
-        if: steps.guard.outputs.skip == 'false'
+      - name: Check YouTube returned a video ID and write unique publication receipt
+        if: steps.duplicate.outputs.skip == 'false'
+        env:
+          DAY: ${{ steps.edition.outputs.date }}
+          SLOT: ${{ steps.edition.outputs.slot }}
         run: |
           python - <<'PY'
-          import json,datetime
+          import datetime,json,os
           from pathlib import Path
-          today=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5))).date().isoformat()
-          receipt=Path("outbox/youtube_result.json")
-          if not receipt.is_file(): raise SystemExit("YouTube did not return result")
-          video_id=json.loads(receipt.read_text()).get("id")
-          if not video_id: raise SystemExit("YouTube upload lacks video ID")
+          day,slot=os.environ["DAY"],os.environ["SLOT"]
+          response=Path("outbox/youtube_result.json")
+          if not response.is_file():raise SystemExit("No YouTube upload response")
+          body=json.loads(response.read_text())
+          video_id=body.get("id")
+          if not video_id: raise SystemExit("Upload response lacks a video ID")
           pkg=json.loads(Path("outbox/latest.json").read_text())
-          report=json.loads(Path("outbox/quality_report.json").read_text())
-          result={"date_pkt":today,"video_id":video_id,"url":"https://www.youtube.com/shorts/"+video_id,"topic":pkg["topic"],"sha256":report["sha256"],"published_utc":datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          qa=json.loads(Path("outbox/quality_report.json").read_text())
+          if (pkg["edition_date_pkt"],pkg["slot"]) != (day,slot):
+              raise SystemExit("Wrong edition to archive")
+          receipt={"date_pkt":day,"slot":slot,"edition_id":pkg["edition_id"],
+                   "video_id":video_id,"url":"https://www.youtube.com/shorts/"+video_id,
+                   "topic":pkg["topic"],"sha256":qa["sha256"],
+                   "published_utc":datetime.datetime.now(datetime.timezone.utc).isoformat()}
           Path("published").mkdir(exist_ok=True)
-          (Path("published")/(today+".json")).write_text(json.dumps(result,indent=2)+"\n")
-          print("CONFIRMED YOUTUBE PUBLICATION",result["url"])
+          (Path("published")/(day+"-"+slot+".json")).write_text(json.dumps(receipt,indent=2)+"\n")
+          print("CONFIRMED YOUTUBE UPLOAD:",receipt["url"])
           PY
+      - name: Archive publication ID BEFORE any Git commit or status logging
+        if: steps.duplicate.outputs.skip == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: orbit-published-${{ steps.edition.outputs.date }}-${{ steps.edition.outputs.slot }}-${{ github.run_id }}
+          path: |
+            published/
+            outbox/youtube_result.json
+            outbox/quality_report.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Persist receipt and prevent future same-slot duplicates
+        if: steps.duplicate.outputs.skip == 'false'
+        run: |
           git config user.name "orbit-autopilot"
           git config user.email "orbit-autopilot@users.noreply.github.com"
           git add published/
-          git commit -m "Orbit verified YouTube upload"
-          # The fresh artifact also changes tracked outbox files in this checkout.
-          # Stash those uncommitted build files before recording the receipt.
-          git stash push -m "Temporary publish artifacts" || true
-          git pull --rebase origin main
-          git push origin HEAD:main
-      - name: Archive successful YouTube receipt
-        if: steps.guard.outputs.skip == 'false'
-        uses: actions/upload-artifact@v4
-        with:
-          name: orbit-published-${{ github.run_id }}
-          path: |
-            published/
-            outbox/quality_report.json
-            outbox/youtube_result.json
-          retention-days: 30
+          git commit -m "Confirm Orbit morning/evening YouTube upload"
+          git stash push -m "Uncommitted generated metadata" || true
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "YouTube receipt safely persisted in the GitHub repository."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::YouTube uploaded, but GitHub receipt push failed. Receipt artifact has been archived; retries will not duplicate."
+          exit 1
