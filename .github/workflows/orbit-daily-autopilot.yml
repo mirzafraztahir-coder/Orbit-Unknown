@@ -168,6 +168,8 @@ jobs:
                   raise SystemExit("QUALITY GATE: mismatched date/slot; refusing wrong or old video")
           if qa.get("status")!="technical_checks_passed" or qa.get("scene_count")!=5:
               raise SystemExit("QUALITY GATE: independent scene or video validation missing")
+          if qa.get("visual_relevance_gate_version") != 1:
+              raise SystemExit("QUALITY GATE: this build predates wrong-planet visual filtering; rejecting obsolete media")
           if hashlib.sha256(vid.read_bytes()).hexdigest()!=qa.get("sha256"):
               raise SystemExit("QUALITY GATE: video checksum mismatch")
           info=json.loads(subprocess.check_output(["ffprobe","-v","error","-show_streams","-show_format","-of","json",str(vid)]))
