@@ -1,0 +1,73 @@
+name: Orbit Cinematic Build
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:00 Pakistan time = 02:00 UTC.
+    - cron: "0 2 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "automation/space_cinematic_v2.py"
+      - ".github/workflows/orbit-cinematic-build.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: orbit-cinematic-build
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    name: Generate and verify cinematic short (no publishing)
+    runs-on: ubuntu-latest
+    timeout-minutes: 48
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: automation/requirements.txt
+      - name: Install video software and narration dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          pip install -r automation/requirements.txt "numpy==1.26.4" "edge-tts>=6.1,<8"
+      - name: Generate five unique NASA scene images, narrated 40s MP4, and captions
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          python automation/space_cinematic_v2.py
+      - name: Verify complete today's media package (does not publish)
+        run: |
+          python - <<'PY'
+          import json, os, hashlib
+          from pathlib import Path
+          from datetime import datetime, timedelta, timezone
+          pkt = timezone(timedelta(hours=5))
+          today = datetime.now(pkt).date().isoformat()
+          meta = json.loads(Path("outbox/latest.json").read_text())
+          qa = json.loads(Path("outbox/quality_report.json").read_text())
+          video = Path("outbox/latest.mp4")
+          assert meta["edition_date_pkt"] == today, "Stale metadata date"
+          assert qa["edition_date_pkt"] == today, "Stale quality report"
+          assert qa["status"] == "technical_checks_passed"
+          assert qa["scene_count"] == 5
+          assert video.stat().st_size > 350000
+          assert hashlib.sha256(video.read_bytes()).hexdigest() == qa["sha256"], "Hash mismatch"
+          print("VERIFIED EDITION:", today, meta["metadata"]["title"], "bytes:", video.stat().st_size)
+          PY
+      - name: Save verified video for 08:00 publishing workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: orbit-ready-${{ github.run_id }}
+          path: |
+            outbox/latest.mp4
+            outbox/latest.json
+            outbox/quality_report.json
+            outbox/nasa_credits.json
+          retention-days: 5
+          if-no-files-found: error
