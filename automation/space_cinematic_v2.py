@@ -147,7 +147,7 @@ def fetch_photo(query, used_ids, used_hashes, folder, number):
             manifest = get_json(entry["href"])
             assets = (manifest if isinstance(manifest, list)
                       else manifest.get("collection", {}).get("items", []))
-            urls = [a.get("href","") for a in assets]
+            urls = [a if isinstance(a, str) else a.get("href", "") for a in assets]
             urls = [u for u in urls if re.search(r"\.(jpe?g|png)(\?.*)?$", u, re.I)]
             preferred = sorted(urls, key=lambda u: (
                 0 if "~large" in u.lower() else
