@@ -56,7 +56,7 @@ TOPICS = [
         ("The Moon creates much of our ocean tide, so tidal patterns would change significantly.","OUR TIDES WOULD CHANGE","earth ocean coastline space"),
         ("The Sun would still produce tides. So the sea would never simply stop moving.","THE SUN STILL MAKES TIDES","ocean earth from orbit"),
         ("Over much longer timescales, Earth's tilt could become less stable without the Moon's influence.","EARTH'S TILT MATTERS","earth tilt axis space"),
-        ("The result would be a different world, but not an instant doomsday. Would you miss it?","NOT AN INSTANT APOCALYPSE","crescent earth space stars")
+        ("The result would be a different world, but not an instant doomsday. Would you miss it?","NOT AN INSTANT APOCALYPSE","Earthrise Apollo 8 moon")
     ]},
     {"slug":"jupiter-dive","title":"What If You Fell Into Jupiter?","beats":[
         ("What would happen if you tried to fall through Jupiter's giant swirling clouds?","FALLING INTO JUPITER","jupiter planet Juno"),
