@@ -235,6 +235,9 @@ jobs:
           print("CONFIRMED YOUTUBE UPLOAD:",receipt["url"])
           PY
       - name: Archive publication ID BEFORE any Git commit or status logging
+        # Even if GitHub artifact storage is temporarily unavailable, attempt to
+        # preserve the receipt in git so the retries cannot double-upload.
+        continue-on-error: true
         if: steps.duplicate.outputs.skip == 'false'
         uses: actions/upload-artifact@v4
         with:
