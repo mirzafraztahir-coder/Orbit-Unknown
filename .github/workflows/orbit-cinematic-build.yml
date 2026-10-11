@@ -12,7 +12,7 @@ on:
       - ".github/workflows/orbit-cinematic-build.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: orbit-cinematic-build
@@ -37,11 +37,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r automation/requirements.txt "numpy==1.26.4" "edge-tts>=6.1,<8"
       - name: Generate five unique NASA scene images, narrated 40s MP4, and captions
+        id: generate
         env:
           PYTHONUNBUFFERED: "1"
         run: |
           python automation/space_cinematic_v2.py
       - name: Verify complete today's media package (does not publish)
+        id: verify
         run: |
           python - <<'PY'
           import json, os, hashlib
@@ -71,3 +73,34 @@ jobs:
             outbox/nasa_credits.json
           retention-days: 5
           if-no-files-found: error
+      - name: Commit build status for remote verification
+        if: always()
+        env:
+          GENERATE_OUTCOME: ${{ steps.generate.outcome }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          mkdir -p ops
+          python - <<'PY'
+          import datetime,json,os
+          from pathlib import Path
+          now=datetime.datetime.now(datetime.timezone.utc)
+          report={"run_id":os.getenv("RUN_ID"),"utc":now.isoformat(),
+                  "date_pkt":(now+datetime.timedelta(hours=5)).date().isoformat(),
+                  "status":os.getenv("JOB_STATUS"),"generation":os.getenv("GENERATE_OUTCOME"),
+                  "verification":os.getenv("VERIFY_OUTCOME"),
+                  "title":None}
+          p=Path("outbox/latest.json")
+          if p.is_file():
+              try: report["title"]=json.loads(p.read_text()).get("topic")
+              except Exception: pass
+          Path("ops/latest_build.json").write_text(json.dumps(report,indent=2)+"\n")
+          print("BUILD STATUS:",json.dumps(report))
+          PY
+          git config user.name "orbit-autopilot"
+          git config user.email "orbit-autopilot@users.noreply.github.com"
+          git add ops/latest_build.json
+          git commit -m "Record latest cinematic production status" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
