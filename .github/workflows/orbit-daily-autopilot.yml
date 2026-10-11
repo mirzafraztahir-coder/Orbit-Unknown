@@ -1,6 +1,10 @@
 name: Orbit Daily Autopilot
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Orbit Cinematic Build"]
+    types: [completed]
+    branches: [main]
   schedule:
     # 08:00 PKT; retry 08:20 and 08:40 if the build is late.
     - cron: "0,20,40 3 * * *"
@@ -14,11 +18,25 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish-verified-edition:
+    # A successful late build can publish immediately after 08:00 PKT.
+    # Earlier builds wait for the scheduled 08:00 PKT publishing window.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - name: Delay workflow-triggered uploads until 08:00 PKT
+        id: opening
+        run: |
+          NOW="$(TZ=Asia/Karachi date +%H%M)"
+          if [ "${{ github.event_name }}" = "workflow_run" ] && [ "$NOW" -lt 0800 ]; then
+            echo "too_early=true" >> "$GITHUB_OUTPUT"
+            echo "Cinematic build finished early; publication waits until 08:00 PKT."
+          else
+            echo "too_early=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Guard against duplicate publication today
+        if: steps.opening.outputs.too_early != 'true'
         id: guard
         run: |
           TODAY="$(TZ=Asia/Karachi date +%F)"
@@ -125,6 +143,9 @@ jobs:
           git config user.email "orbit-autopilot@users.noreply.github.com"
           git add published/
           git commit -m "Orbit verified YouTube upload"
+          # The fresh artifact also changes tracked outbox files in this checkout.
+          # Stash those uncommitted build files before recording the receipt.
+          git stash push -m "Temporary publish artifacts" || true
           git pull --rebase origin main
           git push origin HEAD:main
       - name: Archive successful YouTube receipt
