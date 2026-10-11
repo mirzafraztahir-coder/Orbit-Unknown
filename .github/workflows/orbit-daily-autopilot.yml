@@ -1,100 +1,132 @@
 name: Orbit Daily Autopilot
-
 on:
   workflow_dispatch:
   schedule:
-    # 08:00 Pakistan time = 03:00 UTC
-    - cron: "0 3 * * *"
-
-concurrency:
-  group: orbit-daily-autopilot
-  cancel-in-progress: false
-
+    # 08:00 PKT; retry 08:20 and 08:40 if the build is late.
+    - cron: "0,20,40 3 * * *"
 permissions:
   contents: write
-
+  actions: read
+concurrency:
+  group: orbit-youtube-daily-publish
+  cancel-in-progress: false
 jobs:
-  build-and-publish:
+  publish-verified-edition:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 45
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - name: Guard against duplicate publication today
+        id: guard
+        run: |
+          TODAY="$(TZ=Asia/Karachi date +%F)"
+          echo "today=$TODAY" >> "$GITHUB_OUTPUT"
+          if [ -s "published/$TODAY.json" ]; then
+            echo "Already published $TODAY; skipping"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Download last successful cinematic build
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p outbox
+          rm -f outbox/latest.mp4 outbox/latest.json outbox/quality_report.json outbox/youtube_result.json
+          RUN_ID="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/orbit-cinematic-build.yml/runs?status=completed&per_page=40" --jq '.workflow_runs[] | select(.conclusion == "success" and .head_branch == "main") | .id' | head -n 1)"
+          if [ -z "$RUN_ID" ]; then
+            echo "::error::No completed successful cinematic build. Will retry next slot."
+            exit 1
+          fi
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "orbit-ready-$RUN_ID" --dir outbox
+          test -s outbox/latest.mp4
+          test -s outbox/latest.json
+          test -s outbox/quality_report.json
+      - uses: actions/setup-python@v5
+        if: steps.guard.outputs.skip != 'true'
         with:
           python-version: "3.11"
-
-      - name: Install system video tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r automation/requirements.txt
-          pip install numpy==1.26.4
-
-      - name: Generate cinematic video (fail closed if assets are missing)
-        run: |
-          python automation/cinematic_slideshow.py
-          test -s outbox/latest.json || { echo "QUALITY GATE: metadata package missing"; exit 1; }
-
-      - name: Upload generated assets as workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: orbit-daily-package
-          path: outbox/
-
-      - name: Verify YouTube credentials and generated video
-        env:
-          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-        run: |
-          test -n "$YOUTUBE_CLIENT_ID" || { echo "Missing YOUTUBE_CLIENT_ID"; exit 1; }
-          test -n "$YOUTUBE_CLIENT_SECRET" || { echo "Missing YOUTUBE_CLIENT_SECRET"; exit 1; }
-          test -n "$YOUTUBE_REFRESH_TOKEN" || { echo "Missing YOUTUBE_REFRESH_TOKEN"; exit 1; }
-          test -s outbox/latest.mp4 || { echo "Generated video missing or empty"; exit 1; }
-          test -s outbox/latest.json || { echo "Metadata missing or empty"; exit 1; }
-          ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 outbox/latest.mp4
-
-      - name: Publish to YouTube if credentials are configured
-        env:
-          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
-          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-        run: |
-          python automation/publish_youtube.py outbox/latest.json outbox/latest.mp4
-
-      - name: Verify YouTube publication result
+      - name: Install YouTube dependencies
+        if: steps.guard.outputs.skip != 'true'
+        run: pip install -r automation/requirements.txt
+      - name: Validate media, today's date, and topic uniqueness
+        if: steps.guard.outputs.skip != 'true'
         run: |
           python - <<'PY'
-          import json
+          import hashlib,json,subprocess,datetime
           from pathlib import Path
-          p = Path("outbox/youtube_result.json")
-          if not p.is_file():
-              raise SystemExit("YouTube did not return a publishing result")
-          result = json.loads(p.read_text())
-          if not result.get("id"):
-              raise SystemExit("YouTube result lacks a video ID")
-          print("Published YouTube video ID:", result["id"])
+          today=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5))).date()
+          pkg=json.loads(Path("outbox/latest.json").read_text())
+          report=json.loads(Path("outbox/quality_report.json").read_text())
+          vid=Path("outbox/latest.mp4")
+          if pkg.get("edition_date_pkt")!=today.isoformat() or report.get("edition_date_pkt")!=today.isoformat():
+              raise SystemExit("QUALITY GATE: stale edition; not uploading")
+          if report.get("status")!="technical_checks_passed" or report.get("scene_count")!=5:
+              raise SystemExit("QUALITY GATE: no validated independent images")
+          if hashlib.sha256(vid.read_bytes()).hexdigest()!=report.get("sha256"):
+              raise SystemExit("QUALITY GATE: video SHA256 changed")
+          info=json.loads(subprocess.check_output(["ffprobe","-v","error","-show_streams","-show_format","-of","json",str(vid)]))
+          video=next((s for s in info["streams"] if s["codec_type"]=="video"),None)
+          audio=next((s for s in info["streams"] if s["codec_type"]=="audio"),None)
+          if not video or not audio or (video["width"],video["height"])!=(720,1280):
+              raise SystemExit("QUALITY GATE: wrong format or missing audio")
+          if abs(float(info["format"]["duration"])-40)>.5:
+              raise SystemExit("QUALITY GATE: invalid duration")
+          yesterday=Path("published")/((today-datetime.timedelta(days=1)).isoformat()+".json")
+          if yesterday.is_file() and json.loads(yesterday.read_text()).get("topic")==pkg["topic"]:
+              raise SystemExit("QUALITY GATE: topic already published yesterday")
+          print("QUALITY GATE PASSED", pkg["topic"])
           PY
-
-      - name: Publish to Meta platforms if credentials are configured
+      - name: Require valid YouTube credentials
+        if: steps.guard.outputs.skip != 'true'
         env:
-          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
-          META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
-          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: |
-          python automation/publish_meta.py outbox/latest.json outbox/latest.mp4
-
-      - name: Commit publishing log
+          test -n "$YOUTUBE_CLIENT_ID"
+          test -n "$YOUTUBE_CLIENT_SECRET"
+          test -n "$YOUTUBE_REFRESH_TOKEN"
+      - name: Publish the approved Short to YouTube
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python automation/publish_youtube.py outbox/latest.json outbox/latest.mp4
+      - name: Save YouTube ID and prevent subsequent duplicate uploads
+        if: steps.guard.outputs.skip != 'true'
         run: |
+          python - <<'PY'
+          import json,datetime
+          from pathlib import Path
+          today=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5))).date().isoformat()
+          receipt=Path("outbox/youtube_result.json")
+          if not receipt.is_file(): raise SystemExit("YouTube did not return result")
+          video_id=json.loads(receipt.read_text()).get("id")
+          if not video_id: raise SystemExit("YouTube upload lacks video ID")
+          pkg=json.loads(Path("outbox/latest.json").read_text())
+          report=json.loads(Path("outbox/quality_report.json").read_text())
+          result={"date_pkt":today,"video_id":video_id,"url":"https://www.youtube.com/shorts/"+video_id,"topic":pkg["topic"],"sha256":report["sha256"],"published_utc":datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          Path("published").mkdir(exist_ok=True)
+          (Path("published")/(today+".json")).write_text(json.dumps(result,indent=2)+"\n")
+          print("CONFIRMED YOUTUBE PUBLICATION",result["url"])
+          PY
           git config user.name "orbit-autopilot"
           git config user.email "orbit-autopilot@users.noreply.github.com"
-          git add outbox || true
-          git commit -m "Orbit daily autopilot output" || echo "No changes to commit"
-          git push || true
+          git add published/
+          git commit -m "Orbit verified YouTube upload"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - name: Archive successful YouTube receipt
+        if: steps.guard.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: orbit-published-${{ github.run_id }}
+          path: |
+            published/
+            outbox/quality_report.json
+            outbox/youtube_result.json
+          retention-days: 30
