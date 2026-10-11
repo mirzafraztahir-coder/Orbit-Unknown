@@ -149,6 +149,20 @@ def fetch_photo(query, used_ids, used_hashes, folder, number):
         data = (entry.get("data") or [{}])[0]
         nasa_id = data.get("nasa_id")
         title = str(data.get("title", ""))
+        # Reject a photograph or rendering of the wrong celestial body.
+        # NASA free-text search may otherwise pair an Earth/Moon script with
+        # an unrelated exoplanet, even when the video file passes ffprobe.
+        query_low = query.lower()
+        title_low = title.lower()
+        incompatible_worlds = (
+            "trappist", "kepler-", "exoplanet", "proxima", "venus",
+            "mars", "mercury", "jupiter", "saturn", "uranus",
+            "neptune", "pluto", "titan", "enceladus", "europa", "phobos"
+        )
+        if any(world in title_low and world not in query_low for world in incompatible_worlds):
+            continue
+        if any(word in title_low for word in ("artist's concept", "artists concept", "artist impression")) and "illustration" not in query_low:
+            continue
         if not nasa_id or nasa_id in used_ids or any(x in title.lower() for x in blocked):
             continue
         if data.get("copyright"):
@@ -331,6 +345,7 @@ def technical_gate(video,shots,meta):
     return {"video":str(video),"duration_seconds":duration,"width":W,"height":H,
             "video_bytes":video.stat().st_size,"sha256":hashlib.sha256(video.read_bytes()).hexdigest(),
             "scene_count":len(shots),"audio_codec":a["codec_name"],"source":"NASA Image and Video Library",
+            "visual_relevance_gate_version":1,
             "status":"technical_checks_passed"}
 
 def main():
