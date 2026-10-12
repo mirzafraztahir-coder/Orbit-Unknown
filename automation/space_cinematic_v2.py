@@ -251,12 +251,35 @@ def overlay(caption, dest):
     canvas.save(dest)
 
 async def synthesize_voice(beats,folder):
+    """Use Edge neural speech when available, with offline Piper neural fallback."""
+    try:
+        for index,(sentence,_,_) in enumerate(beats,1):
+            file = folder / f"narration_{index:02d}.mp3"
+            await edge_tts.Communicate(sentence, voice="en-US-ChristopherNeural", rate="+7%").save(str(file))
+            if not file.is_file() or file.stat().st_size < 2000:
+                raise RuntimeError("Edge narration missing or too small")
+        return
+    except Exception as exc:
+        log(f"Edge neural voice unavailable ({exc}); switching to Piper neural voice.")
+    model = folder / "en_US-lessac-medium.onnx"
+    config = folder / "en_US-lessac-medium.onnx.json"
+    base = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/"
+    for name,dest in [(model.name,model),(config.name,config)]:
+        if not dest.exists():
+            response = SESSION.get(base + name, timeout=(20,180))
+            response.raise_for_status()
+            dest.write_bytes(response.content)
+    if model.stat().st_size < 1000000:
+        raise RuntimeError("Piper neural model download invalid")
     for index,(sentence,_,_) in enumerate(beats,1):
-        file = folder / f"narration_{index:02d}.mp3"
-        communicate = edge_tts.Communicate(sentence, voice="en-US-ChristopherNeural", rate="+7%")
-        await communicate.save(str(file))
-        if not file.is_file() or file.stat().st_size<2000:
-            raise RuntimeError("Neural narration failed for beat "+str(index))
+        wav = folder / f"piper_{index:02d}.wav"
+        subprocess.run(["python","-m","piper","--model",str(model),"--config",str(config),
+                        "--output_file",str(wav)],input=sentence,text=True,check=True)
+        command(["ffmpeg","-y","-loglevel","error","-i",str(wav),
+                 "-codec:a","libmp3lame","-qscale:a","3",
+                 str(folder / f"narration_{index:02d}.mp3")])
+        if (folder / f"narration_{index:02d}.mp3").stat().st_size < 2000:
+            raise RuntimeError("Piper neural narration invalid for scene " + str(index))
 
 def score_and_voice(beats,folder,outfile):
     rate=24000
