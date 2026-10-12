@@ -62,7 +62,7 @@ TOPICS = [
         ("What would happen if you tried to fall through Jupiter's giant swirling clouds?","FALLING INTO JUPITER","jupiter planet Juno"),
         ("There is no familiar solid ground waiting beneath that spectacular cloud cover.","NO SOLID SURFACE","jupiter clouds great red spot"),
         ("As you descend, pressure and temperature rise to crushing, unimaginable levels.","PRESSURE KEEPS RISING","jupiter atmosphere Juno clouds"),
-        ("Deep inside, hydrogen behaves in strange ways, potentially becoming a conducting metallic fluid.","STRANGE DEEP INTERIOR","Jupiter deep interior illustration"),
+        ("Deep inside, hydrogen behaves in strange ways, potentially becoming a conducting metallic fluid.","STRANGE DEEP INTERIOR","jupiter planet Juno"),
         ("Jupiter is breathtaking from space. But it is definitely not a planet you could land on.","A WORLD WITHOUT LANDING","jupiter planet Hubble")
     ]},
     {"slug":"saturn-rings","title":"What If Saturn Lost Its Rings?","beats":[
