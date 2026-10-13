@@ -1,6 +1,6 @@
-"""Orbit Unknown: independently sourced NASA imagery, 40-second cinematic video.
+"""Orbit Unknown: locally generated original astronomy illustrations, 40-second cinematic video.
 No manual uploads, no legacy cartoon templates, and no publication in this script.
-NASA imagery illustrates hypothetical scenarios; it does not depict the scenario itself.
+Illustrations depict hypothetical scenarios and are not real footage.
 """
 import asyncio
 import hashlib
@@ -140,78 +140,62 @@ def get_json(url, **kwargs):
     return r.json()
 
 def fetch_photo(query, used_ids, used_hashes, folder, number):
-    search = get_json("https://images-api.nasa.gov/search",
-                      params={"q": query, "media_type":"image", "page_size":30})
-    items = search.get("collection", {}).get("items", [])
-    blocked = ("logo", "patch", "infographic", "chart", "diagram", "poster", "screenshot", "press conference")
-    errors = []
-    for entry in items[:24]:
-        data = (entry.get("data") or [{}])[0]
-        nasa_id = data.get("nasa_id")
-        title = str(data.get("title", ""))
-        # Reject a photograph or rendering of the wrong celestial body.
-        # NASA free-text search may otherwise pair an Earth/Moon script with
-        # an unrelated exoplanet, even when the video file passes ffprobe.
-        query_low = query.lower()
-        title_low = title.lower()
-        incompatible_worlds = (
-            "trappist", "kepler-", "exoplanet", "proxima", "venus",
-            "mars", "mercury", "jupiter", "saturn", "uranus",
-            "neptune", "pluto", "titan", "enceladus", "europa", "phobos"
-        )
-        if any(world in title_low and world not in query_low for world in incompatible_worlds):
-            continue
-        if any(word in title_low for word in ("artist's concept", "artists concept", "artist impression")) and "illustration" not in query_low:
-            continue
-        if not nasa_id or nasa_id in used_ids or any(x in title.lower() for x in blocked):
-            continue
-        if data.get("copyright"):
-            continue
-        try:
-            manifest = get_json(entry["href"])
-            assets = (manifest if isinstance(manifest, list)
-                      else manifest.get("collection", {}).get("items", []))
-            urls = [a if isinstance(a, str) else a.get("href", "") for a in assets]
-            urls = [u for u in urls if re.search(r"\.(jpe?g|png)(\?.*)?$", u, re.I)]
-            preferred = sorted(urls, key=lambda u: (
-                0 if "~large" in u.lower() else
-                1 if "~orig" in u.lower() else
-                2 if "~medium" in u.lower() else 3))
-            for url in preferred[:3]:
-                r = SESSION.get(url, timeout=(12,38), stream=True)
-                r.raise_for_status()
-                total = 0
-                chunks = []
-                for chunk in r.iter_content(65536):
-                    if chunk:
-                        chunks.append(chunk)
-                        total += len(chunk)
-                        if total > 14_000_000:
-                            break
-                if total > 14_000_000:
-                    continue
-                with Image.open(BytesIO(b"".join(chunks))) as raw:
-                    im = ImageOps.exif_transpose(raw).convert("RGB")
-                if im.width < 900 or im.height < 600:
-                    continue
-                if max(im.width, im.height) < 1150:
-                    continue
-                small = im.resize((16,16)).convert("L")
-                digest = hashlib.sha256(small.tobytes()).hexdigest()
-                if digest in used_hashes:
-                    continue
-                used_ids.add(nasa_id)
-                used_hashes.add(digest)
-                dest = folder / f"source_{number:02d}.jpg"
-                im.thumbnail((2500,2500), Image.Resampling.LANCZOS)
-                im.save(dest, quality=93, optimize=True)
-                return dest, {"nasa_id":nasa_id,"title":title,"url":url,"query":query,
-                              "center":data.get("center","NASA")}
-        except Exception as exc:
-            errors.append(str(exc)[:100])
-            continue
-    raise RuntimeError("Could not download a distinct high-resolution NASA image for: " + query +
-                       "; samples: " + " | ".join(errors[:2]))
+    """Create original astronomy illustrations without external image services."""
+    seed = int(hashlib.sha256((query + str(number)).encode()).hexdigest()[:12], 16)
+    rng = np.random.default_rng(seed)
+    width, height = 1000, 1600
+    theme = query.lower()
+    palette = (
+        (196, 95, 58) if "mars" in theme else
+        (208, 178, 126) if "saturn" in theme else
+        (187, 145, 111) if "jupiter" in theme else
+        (47, 102, 209) if "neptune" in theme else
+        (225, 170, 76) if "sun" in theme or "star" in theme else
+        (161, 169, 180) if "moon" in theme else
+        (68, 137, 194)
+    )
+    background = Image.new("RGB", (width, height), (7, 12, 28))
+    draw = ImageDraw.Draw(background)
+    for _ in range(1100):
+        x, y = int(rng.integers(width)), int(rng.integers(height))
+        brightness = int(rng.integers(75, 240))
+        radius = 2 if rng.random() < 0.03 else 1
+        draw.ellipse((x-radius, y-radius, x+radius, y+radius),
+                     fill=(brightness, brightness, brightness))
+    radius = 400
+    yy, xx = np.mgrid[-radius:radius+1, -radius:radius+1]
+    distance = xx*xx + yy*yy
+    inside = distance <= radius*radius
+    z = np.sqrt(np.maximum(0.0, 1.0 - distance / (radius*radius)))
+    lighting = np.clip(0.18 + 0.72*(0.6*xx/radius - 0.3*yy/radius + 0.7*z), 0.08, 1.0)
+    texture = 1 + 0.13*np.sin(yy/20.0 + 0.6*np.sin(xx/65.0)) + 0.06*np.sin(xx/29.0+yy/37.0)
+    if "mars" in theme or "moon" in theme:
+        texture += 0.12*np.sin(xx/31.0)*np.cos(yy/41.0)
+    pixels = np.zeros((2*radius+1, 2*radius+1, 4), dtype=np.uint8)
+    for channel in range(3):
+        pixels[:, :, channel] = np.clip(palette[channel]*lighting*texture, 0, 255).astype(np.uint8)
+    pixels[:, :, 3] = np.where(inside, 255, 0).astype(np.uint8)
+    planet = Image.fromarray(pixels, "RGBA")
+    cx = width//2 + (number-3)*18
+    cy = height//2
+    background.paste(planet, (cx-radius, cy-radius), planet)
+    if "saturn" in theme or "rings" in theme:
+        draw = ImageDraw.Draw(background, "RGBA")
+        for i in range(22):
+            rx = radius*(1.18 + i*0.027)
+            ry = rx*0.34
+            draw.arc((cx-rx, cy-ry, cx+rx, cy+ry), 3, 177,
+                     fill=(220, 205, 175, max(25, 145-i*5)), width=3)
+    dest = folder / f"source_{number:02d}.jpg"
+    background.save(dest, quality=94, optimize=True)
+    identifier = "orbit-original-" + hashlib.sha256((query+str(number)).encode()).hexdigest()[:18]
+    if identifier in used_ids:
+        raise RuntimeError("Duplicate original illustration identifier")
+    used_ids.add(identifier)
+    used_hashes.add(identifier)
+    return dest, {"nasa_id": identifier, "title": "Original generated astronomy illustration",
+                  "url": "locally-generated", "query": query, "center": "Orbit Unknown",
+                  "license": "original"}
 
 def photograph_canvas(photo, dest):
     # One photo per scene: crop to a tall cinematic frame, then restrained contrast/color grading.
@@ -367,7 +351,7 @@ def technical_gate(video,shots,meta):
             raise RuntimeError("QUALITY GATE: video frames too uniform")
     return {"video":str(video),"duration_seconds":duration,"width":W,"height":H,
             "video_bytes":video.stat().st_size,"sha256":hashlib.sha256(video.read_bytes()).hexdigest(),
-            "scene_count":len(shots),"audio_codec":a["codec_name"],"source":"NASA Image and Video Library",
+            "scene_count":len(shots),"audio_codec":a["codec_name"],"source":"Orbit Unknown original procedural artwork",
             "visual_relevance_gate_version":1,
             "status":"technical_checks_passed"}
 
@@ -379,7 +363,7 @@ def main():
     ids=set();hashes=set();photos=[];credits=[]
     log(f"Orbit Unknown edition={edition} slot={slot} topic={topic['title']}")
     for i,(_,caption,query) in enumerate(beats,1):
-        log(f"Retrieving independent NASA scene {i}: {query}")
+        log(f"Generating original astronomy scene {i}: {query}")
         img,credit=fetch_photo(query,ids,hashes,work,i)
         frame=work/f"scene_{i:02d}.jpg"
         photograph_canvas(img,frame)
@@ -389,12 +373,12 @@ def main():
     asyncio.run(synthesize_voice(beats,work))
     score_and_voice(beats,work,work/"final_audio.wav")
     video=render_video(photos,[b[1] for b in beats],work)
-    credit_lines="\n".join(f"Scene {i}: NASA Image Library ID {x['nasa_id']} ({x['title'][:80]})" for i,x in enumerate(credits,1))
+    credit_lines="\n".join(f"Scene {i}: original generated illustration ({x['query']})" for i,x in enumerate(credits,1))
     package={"edition_date_pkt":edition,"edition_id":edition+"-"+slot,"slot":slot,"topic":topic["title"],"slug":topic["slug"],
              "script":" ".join(b[0] for b in beats),
              "metadata":{"title":topic["title"][:100],
                          "caption":topic["title"]+"\n\nImpossible Questions. Real Science.\n"+
-                         "Illustrative NASA imagery; hypothetical scenarios are not real footage.\n\n"+
+                         "Original astronomy illustrations; hypothetical scenarios are not real footage.\n\n"+
                          credit_lines+"\n\n#space #science #whatif #shorts #orbitunknown",
                          "privacyStatus":"public"},
              "scenes":[{"start":i*8,"end":(i+1)*8,"voice":v,"caption":c,
