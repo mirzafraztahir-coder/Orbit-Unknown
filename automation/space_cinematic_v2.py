@@ -75,7 +75,7 @@ TOPICS = [
     {"slug":"mars-ocean","title":"What If Mars Had an Ocean Today?","beats":[
         ("Imagine oceans rolling beneath the pink skies of Mars, where dry plains stretch today.","OCEANS ON MARS?","Mars planet surface panorama"),
         ("Ancient Martian landscapes preserve powerful evidence that water once flowed across the planet.","WATER ON ANCIENT MARS","mars ancient river delta Perseverance"),
-        ("But liquid oceans today would need a dramatically thicker atmosphere and much warmer conditions.","A THICKER ATMOSPHERE","mars horizon clouds rover"),
+        ("But liquid oceans today would need a dramatically thicker atmosphere and much warmer conditions.","A THICKER ATMOSPHERE","Mars planet surface panorama"),
         ("Even with blue seas, intense radiation and other challenges could still threaten life.","WATER IS NOT ENOUGH","Mars planet NASA orbiter"),
         ("Could humans someday build a new world there? The physics makes it very difficult.","THE RED PLANET REIMAGINED","Mars planet full disk")
     ]},
