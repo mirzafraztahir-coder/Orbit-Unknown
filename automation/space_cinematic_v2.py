@@ -140,62 +140,21 @@ def get_json(url, **kwargs):
     return r.json()
 
 def fetch_photo(query, used_ids, used_hashes, folder, number):
-    """Create original astronomy illustrations without external image services."""
-    seed = int(hashlib.sha256((query + str(number)).encode()).hexdigest()[:12], 16)
-    rng = np.random.default_rng(seed)
-    width, height = 1000, 1600
-    theme = query.lower()
-    palette = (
-        (196, 95, 58) if "mars" in theme else
-        (208, 178, 126) if "saturn" in theme else
-        (187, 145, 111) if "jupiter" in theme else
-        (47, 102, 209) if "neptune" in theme else
-        (225, 170, 76) if "sun" in theme or "star" in theme else
-        (161, 169, 180) if "moon" in theme else
-        (68, 137, 194)
-    )
-    background = Image.new("RGB", (width, height), (7, 12, 28))
-    draw = ImageDraw.Draw(background)
-    for _ in range(1100):
-        x, y = int(rng.integers(width)), int(rng.integers(height))
-        brightness = int(rng.integers(75, 240))
-        radius = 2 if rng.random() < 0.03 else 1
-        draw.ellipse((x-radius, y-radius, x+radius, y+radius),
-                     fill=(brightness, brightness, brightness))
-    radius = 400
-    yy, xx = np.mgrid[-radius:radius+1, -radius:radius+1]
-    distance = xx*xx + yy*yy
-    inside = distance <= radius*radius
-    z = np.sqrt(np.maximum(0.0, 1.0 - distance / (radius*radius)))
-    lighting = np.clip(0.18 + 0.72*(0.6*xx/radius - 0.3*yy/radius + 0.7*z), 0.08, 1.0)
-    texture = 1 + 0.13*np.sin(yy/20.0 + 0.6*np.sin(xx/65.0)) + 0.06*np.sin(xx/29.0+yy/37.0)
-    if "mars" in theme or "moon" in theme:
-        texture += 0.12*np.sin(xx/31.0)*np.cos(yy/41.0)
-    pixels = np.zeros((2*radius+1, 2*radius+1, 4), dtype=np.uint8)
-    for channel in range(3):
-        pixels[:, :, channel] = np.clip(palette[channel]*lighting*texture, 0, 255).astype(np.uint8)
-    pixels[:, :, 3] = np.where(inside, 255, 0).astype(np.uint8)
-    planet = Image.fromarray(pixels, "RGBA")
-    cx = width//2 + (number-3)*18
-    cy = height//2
-    background.paste(planet, (cx-radius, cy-radius), planet)
-    if "saturn" in theme or "rings" in theme:
-        draw = ImageDraw.Draw(background, "RGBA")
-        for i in range(22):
-            rx = radius*(1.18 + i*0.027)
-            ry = rx*0.34
-            draw.arc((cx-rx, cy-ry, cx+rx, cy+ry), 3, 177,
-                     fill=(220, 205, 175, max(25, 145-i*5)), width=3)
-    dest = folder / f"source_{number:02d}.jpg"
-    background.save(dest, quality=94, optimize=True)
-    identifier = "orbit-original-" + hashlib.sha256((query+str(number)).encode()).hexdigest()[:18]
+    """Render a unique 3D astronomy scene locally with Blender, without stock images."""
+    identifier = "orbit-3d-" + hashlib.sha256((query + str(number)).encode()).hexdigest()[:18]
     if identifier in used_ids:
-        raise RuntimeError("Duplicate original illustration identifier")
+        raise RuntimeError("Duplicate 3D scene identifier")
+    png = folder / f"render_{number:02d}.png"
+    command(["blender", "-b", "-t", "2", "--python",
+             "automation/render_scene_3d.py", "--",
+             "--query", query, "--number", str(number), "--output", str(png)])
+    if not png.is_file() or png.stat().st_size < 100000:
+        raise RuntimeError("Blender did not produce a valid scene: " + str(png))
     used_ids.add(identifier)
     used_hashes.add(identifier)
-    return dest, {"nasa_id": identifier, "title": "Original generated astronomy illustration",
-                  "url": "locally-generated", "query": query, "center": "Orbit Unknown",
-                  "license": "original"}
+    return png, {"nasa_id": identifier, "title": "Original Blender 3D astronomy scene",
+                 "url": "locally-rendered", "query": query, "center": "Orbit Unknown",
+                 "license": "original", "renderer": "Blender"}
 
 def photograph_canvas(photo, dest):
     # One photo per scene: crop to a tall cinematic frame, then restrained contrast/color grading.
@@ -363,7 +322,7 @@ def main():
     ids=set();hashes=set();photos=[];credits=[]
     log(f"Orbit Unknown edition={edition} slot={slot} topic={topic['title']}")
     for i,(_,caption,query) in enumerate(beats,1):
-        log(f"Generating original astronomy scene {i}: {query}")
+        log(f"Rendering original Blender 3D scene {i}: {query}")
         img,credit=fetch_photo(query,ids,hashes,work,i)
         frame=work/f"scene_{i:02d}.jpg"
         photograph_canvas(img,frame)
