@@ -47,7 +47,11 @@ jobs:
                 *) echo "::error::Unknown production schedule"; exit 1 ;;
               esac ;;
             workflow_dispatch) SLOT="$INPUT_SLOT" ;;
-            push) SLOT=evening ;;
+            push)
+              # Rebuild the edition currently due in Pakistan, not always evening.
+              HOUR="$(TZ=Asia/Karachi date +%H)"
+              if [ "$HOUR" -lt 12 ]; then SLOT=morning; else SLOT=evening; fi
+              ;;
             *) echo "::error::Unsupported event"; exit 1 ;;
           esac
           case "$SLOT" in morning|evening) ;; *) echo "::error::Invalid slot"; exit 1 ;; esac
