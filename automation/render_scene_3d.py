@@ -110,6 +110,43 @@ else:
     if is_sun:
         corona=material("Emissive corona",(1,0.36,0.05),emission=3)
         ring("Solar atmosphere",(0,0,0),1.94,0.05,corona,rotation=(0.2,0.4,0.1))
+# Scene-specific foreground geometry: each narration beat gets a different composition.
+# All elements are original procedural 3D meshes, rendered offline.
+if a.number == 2:
+    # Wide atmospheric horizon, with the foreground globe below the camera.
+    horizon=material("Atmospheric rim",(0.08,0.32,0.75),emission=0.7)
+    sphere("Curved planetary horizon",(0,-5,-7.0),7.2,planetmat)
+    ring("Atmospheric scattering edge",(0,-5,-7.0),7.25,0.055,horizon,rotation=(0.15,0,0))
+elif a.number == 3:
+    # Physical field of orbiting fragments instead of another central planet close-up.
+    debris=material("Orbiting rock",(0.38,0.32,0.29),metallic=0.15,roughness=0.88)
+    for j in range(34):
+        theta=2*math.pi*j/34
+        radius=rng.uniform(2.7,4.7)
+        sphere("Orbiting fragment %02d"%j,
+               (radius*math.cos(theta),radius*math.sin(theta),rng.uniform(-1.4,1.4)),
+               rng.uniform(0.04,0.16),debris,segments=10,rings=6)
+elif a.number == 4:
+    # Spacecraft silhouette in the foreground to give the shot scale and depth.
+    hull=material("Spacecraft titanium",(0.46,0.53,0.61),metallic=0.75,roughness=0.24)
+    solar=material("Solar panels",(0.025,0.08,0.22),metallic=0.35,roughness=0.22)
+    bpy.ops.mesh.primitive_cube_add(size=1,location=(-2.2,-2.6,0.3))
+    craft=bpy.context.object
+    craft.name="Exploration spacecraft fuselage"
+    craft.scale=(0.34,0.65,0.25)
+    craft.data.materials.append(hull)
+    for side in (-1,1):
+        bpy.ops.mesh.primitive_cube_add(size=1,location=(-2.2+side*0.95,-2.6,0.3))
+        panel=bpy.context.object
+        panel.name="Solar array"
+        panel.scale=(1.55,0.7,0.045)
+        panel.data.materials.append(solar)
+elif a.number == 5:
+    # Distant moons in a wide establishing composition.
+    for j in range(3):
+        sphere("Distant moon %02d"%j,
+               (-3.3+j*2.6,2.4-j*0.5,-2.5-j),
+               0.23+j*0.12,icy)
 # Distant stars are actual 3D emissive objects with parallax.
 for i in range(125):
     x=rng.uniform(-24,24);y=rng.uniform(-30,30);z=rng.uniform(-23,-12)
@@ -119,7 +156,7 @@ bpy.ops.object.camera_add(location=(4.4+0.8*math.sin(a.number),-8.4,3.0+0.6*math
 camera=bpy.context.object
 aim(camera,(0,0,0))
 camera.data.type="ORTHO"
-camera.data.ortho_scale=8.0 if is_ring else 6.6
+camera.data.ortho_scale=(9.5 if a.number == 5 else 8.5 if a.number == 3 else 8.0 if is_ring else 6.6)
 scene.camera=camera
 light((-4,-5,7),1200,(0.78,0.87,1),6)
 light((5,3,0),950,(1,0.47,0.19),5)
