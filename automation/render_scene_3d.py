@@ -17,7 +17,9 @@ q=a.query.lower()
 bpy.ops.object.select_all(action="SELECT")
 bpy.ops.object.delete(use_global=False)
 scene=bpy.context.scene
-scene.render.engine="BLENDER_EEVEE_NEXT" if hasattr(bpy.types,"BLENDER_EEVEE_NEXT") else "BLENDER_EEVEE"
+scene.render.engine="CYCLES"
+scene.cycles.device="CPU"
+scene.cycles.samples=16
 scene.render.resolution_x=800
 scene.render.resolution_y=1280
 scene.render.resolution_percentage=100
@@ -25,7 +27,7 @@ scene.render.image_settings.file_format="PNG"
 scene.render.filepath=a.output
 scene.render.film_transparent=False
 scene.world.color=(0.003,0.006,0.017)
-scene.view_settings.view_transform="AgX" if "AgX" in [x.identifier for x in bpy.types.ColorManagedViewSettings.bl_rna.properties["view_transform"].enum_items] else "Standard"
+scene.view_settings.view_transform="Standard"
 
 def material(name,color,metallic=0,roughness=0.6,emission=0):
     m=bpy.data.materials.new(name)
