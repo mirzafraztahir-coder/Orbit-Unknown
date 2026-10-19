@@ -9,8 +9,8 @@ on:
         default: evening
         options: [morning, evening]
   schedule:
-    - cron: "0,30 1 * * *"    # 06:00 & 06:30 PKT early morning recovery
-    - cron: "0,40 2 * * *"    # 07:00 & 07:40 Pakistan time
+    - cron: "26,50 21 * * *"  # 02:26 & 02:50 PKT (next day), morning primary and backup
+    - cron: "10 22 * * *"     # 03:10 PKT (next day), morning recovery
     - cron: "0,40 10 * * *"   # 15:00 & 15:40 Pakistan time
   push:
     branches: [main]
@@ -44,7 +44,7 @@ jobs:
           case "$EVENT_TYPE" in
             schedule)
               case "$EVENT_CRON" in
-                "0,30 1 * * *"|"0,40 2 * * *") SLOT=morning ;;
+                "26,50 21 * * *"|"10 22 * * *") SLOT=morning ;;
                 "0,40 10 * * *") SLOT=evening ;;
                 *) echo "::error::Unknown production schedule"; exit 1 ;;
               esac ;;
