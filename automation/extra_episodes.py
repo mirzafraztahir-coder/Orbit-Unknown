@@ -148,3 +148,627 @@ EXTRA_TOPICS = [
         ("Orbit is not escaping gravity. It is falling in exactly the right way.", "THE SECRET OF ORBIT", "International Space Station NASA"),
     ]},
 ]
+
+# Additional original science episodes; rendered only with the local Blender renderer.
+EXTRA_TOPICS.extend([
+  {
+    "slug": "moon-atmosphere",
+    "title": "What If the Moon Had an Atmosphere?",
+    "beats": [
+      [
+        "The Moon has almost no atmosphere today, so its surface faces space directly.",
+        "THE AIRLESS MOON",
+        "moon lunar surface"
+      ],
+      [
+        "A thicker atmosphere would change how sunlight and heat move across its surface.",
+        "AIR CHANGES EVERYTHING",
+        "moon horizon atmosphere"
+      ],
+      [
+        "Whether it could keep that air depends on temperature, gravity, and solar activity.",
+        "COULD IT KEEP THE AIR?",
+        "moon earth orbit"
+      ],
+      [
+        "Weather and erosion could reshape landscapes that currently preserve ancient footprints.",
+        "A CHANGING LANDSCAPE",
+        "moon crater surface"
+      ],
+      [
+        "A breathable atmosphere would require much more than simply adding gas.",
+        "NOT SO SIMPLE",
+        "lunar moon Earth"
+      ]
+    ]
+  },
+  {
+    "slug": "earth-no-tilt",
+    "title": "What If Earth Had No Axial Tilt?",
+    "beats": [
+      [
+        "Earth's tilted axis helps create the seasons we know.",
+        "WHY SEASONS EXIST",
+        "earth sun planet"
+      ],
+      [
+        "With almost no tilt, the Sun's yearly path would change much less.",
+        "FEWER SEASONAL SHIFTS",
+        "earth solar orbit"
+      ],
+      [
+        "Daylight hours would remain more consistent at each latitude.",
+        "STEADIER DAYLIGHT",
+        "earth horizon sun"
+      ],
+      [
+        "Climate would still vary with geography, oceans, and weather.",
+        "WEATHER WOULD REMAIN",
+        "earth clouds atmosphere"
+      ],
+      [
+        "Life would adapt to a planet with a very different annual rhythm.",
+        "A NEW YEARLY RHYTHM",
+        "earth blue planet"
+      ]
+    ]
+  },
+  {
+    "slug": "pulsar-visit",
+    "title": "What If You Approached a Pulsar?",
+    "beats": [
+      [
+        "A pulsar is a rapidly spinning neutron star left behind after some supernovae.",
+        "A SPINNING REMNANT",
+        "neutron star pulsar"
+      ],
+      [
+        "Its intense magnetic field can produce narrow beams of radiation.",
+        "BEAMS THROUGH SPACE",
+        "star magnetic field"
+      ],
+      [
+        "When those beams sweep across Earth, we detect remarkably regular pulses.",
+        "A COSMIC LIGHTHOUSE",
+        "pulsar star space"
+      ],
+      [
+        "Close up, gravity and radiation would make survival impossible.",
+        "EXTREME ENVIRONMENT",
+        "neutron star space"
+      ],
+      [
+        "Pulsars help astronomers study matter under extraordinary conditions.",
+        "NATURE'S LABORATORY",
+        "star deep space"
+      ]
+    ]
+  },
+  {
+    "slug": "earth-two-suns",
+    "title": "What If Earth Orbited Two Suns?",
+    "beats": [
+      [
+        "Some planets really do orbit pairs of stars.",
+        "TWO SUNS ARE POSSIBLE",
+        "binary stars planet"
+      ],
+      [
+        "A stable orbit depends on the masses and separation of the stars.",
+        "ORBITS MUST BE STABLE",
+        "binary star system"
+      ],
+      [
+        "Sunrises and seasons could be more complicated than Earth's.",
+        "A STRANGE SKY",
+        "sun earth horizon"
+      ],
+      [
+        "The amount of energy reaching a planet would depend on its changing geometry.",
+        "SUNLIGHT IN MOTION",
+        "two stars exoplanet"
+      ],
+      [
+        "A double sunset is possible, but a habitable world would need the right conditions.",
+        "DOUBLE SUNSET?",
+        "sun star planet"
+      ]
+    ]
+  },
+  {
+    "slug": "ceres-landing",
+    "title": "What If We Landed on Ceres?",
+    "beats": [
+      [
+        "Ceres is the largest object in the asteroid belt and is classified as a dwarf planet.",
+        "A DWARF PLANET",
+        "asteroid Ceres planet"
+      ],
+      [
+        "Its weak gravity would make movement feel very different from Earth.",
+        "TINY GRAVITY",
+        "asteroid surface"
+      ],
+      [
+        "Bright salt deposits reveal a history involving briny material.",
+        "MYSTERIOUS BRIGHT SPOTS",
+        "Ceres crater asteroid"
+      ],
+      [
+        "Scientists suspect that water-rich material exists beneath parts of its crust.",
+        "WATER-RICH INTERIOR",
+        "asteroid icy planet"
+      ],
+      [
+        "Exploring Ceres could teach us how small worlds evolve.",
+        "A SMALL WORLD'S SECRETS",
+        "asteroid spacecraft"
+      ]
+    ]
+  },
+  {
+    "slug": "gamma-ray-burst",
+    "title": "What If a Gamma-Ray Burst Pointed at Earth?",
+    "beats": [
+      [
+        "Some cosmic explosions produce intensely energetic gamma-ray bursts.",
+        "A COSMIC FLASH",
+        "supernova star space"
+      ],
+      [
+        "Their effects depend on distance, energy, and whether a beam points our way.",
+        "DIRECTION MATTERS",
+        "star galaxy"
+      ],
+      [
+        "A sufficiently nearby event could disturb Earth's upper atmosphere.",
+        "ATMOSPHERE AT RISK",
+        "earth atmosphere space"
+      ],
+      [
+        "Most observed bursts are extremely distant and pose no danger to us.",
+        "SPACE IS VAST",
+        "distant galaxy stars"
+      ],
+      [
+        "Astronomers study these bursts to understand the universe's most powerful events.",
+        "WATCHING THE FLASHES",
+        "star telescope space"
+      ]
+    ]
+  },
+  {
+    "slug": "mars-rings",
+    "title": "What If Mars Had Rings?",
+    "beats": [
+      [
+        "Mars may one day gain rings if its moon Phobos breaks apart.",
+        "A FUTURE RINGED MARS",
+        "mars ring planet"
+      ],
+      [
+        "Fragments could spread into orbit rather than fall together immediately.",
+        "FRAGMENTS IN ORBIT",
+        "mars asteroid orbit"
+      ],
+      [
+        "The rings would appear different depending on where an observer stood.",
+        "A NEW MARTIAN SKY",
+        "mars horizon ring"
+      ],
+      [
+        "Over time, collisions and gravity would reshape the debris.",
+        "RINGS KEEP EVOLVING",
+        "mars ring debris"
+      ],
+      [
+        "Even a thin ring system could transform the red planet's appearance.",
+        "THE RED PLANET TRANSFORMED",
+        "mars planet rings"
+      ]
+    ]
+  },
+  {
+    "slug": "ocean-exoplanet",
+    "title": "What If We Found an Ocean Exoplanet?",
+    "beats": [
+      [
+        "Astronomers have discovered thousands of worlds beyond our solar system.",
+        "WORLDS BEYOND THE SUN",
+        "exoplanet star"
+      ],
+      [
+        "Some may contain large amounts of water, but their surfaces remain hard to observe.",
+        "HIDDEN OCEANS?",
+        "planet ocean space"
+      ],
+      [
+        "An ocean alone would not prove that life exists.",
+        "WATER IS NOT LIFE",
+        "earth ocean planet"
+      ],
+      [
+        "Atmospheric measurements could help test possible conditions on distant worlds.",
+        "READING DISTANT AIR",
+        "exoplanet atmosphere"
+      ],
+      [
+        "A confirmed ocean world would reshape our search for habitable planets.",
+        "THE SEARCH EXPANDS",
+        "planet star space"
+      ]
+    ]
+  },
+  {
+    "slug": "day-48-hours",
+    "title": "What If Earth's Day Lasted 48 Hours?",
+    "beats": [
+      [
+        "Imagine Earth rotating half as quickly, making each full day last forty-eight hours.",
+        "A LONGER DAY",
+        "earth planet sunrise"
+      ],
+      [
+        "Many places would experience longer periods of sunlight and darkness.",
+        "LONG DAYS LONG NIGHTS",
+        "earth terminator sun"
+      ],
+      [
+        "Land temperatures and atmospheric circulation would respond to the new rhythm.",
+        "WEATHER WOULD SHIFT",
+        "earth atmosphere clouds"
+      ],
+      [
+        "Biological clocks would face challenges in adapting to the slower cycle.",
+        "LIFE'S INTERNAL CLOCK",
+        "earth night space"
+      ],
+      [
+        "The outcome would depend on how the rotation changed and over what timescale.",
+        "CHANGE TAKES TIME",
+        "earth orbit planet"
+      ]
+    ]
+  },
+  {
+    "slug": "venus-cooling",
+    "title": "What If Venus Suddenly Cooled?",
+    "beats": [
+      [
+        "Venus is extremely hot because of its dense greenhouse atmosphere.",
+        "THE HOTTEST PLANET",
+        "venus planet"
+      ],
+      [
+        "Cooling the surface would not automatically make the air breathable.",
+        "COOL IS NOT SAFE",
+        "venus atmosphere planet"
+      ],
+      [
+        "Its crushing pressure and carbon dioxide-rich air would remain enormous challenges.",
+        "PRESSURE REMAINS",
+        "venus clouds planet"
+      ],
+      [
+        "Changing Venus into an Earthlike world would demand immense planetary engineering.",
+        "A PLANET-SIZED PROJECT",
+        "venus earth planet"
+      ],
+      [
+        "For now, robotic missions are the practical way to explore this hostile neighbor.",
+        "ROBOTS GO FIRST",
+        "venus spacecraft"
+      ]
+    ]
+  },
+  {
+    "slug": "earth-moon-double",
+    "title": "What If the Moon Were Twice as Massive?",
+    "beats": [
+      [
+        "The Moon's gravity helps shape tides and the Earth-Moon system.",
+        "A HEAVIER MOON",
+        "moon earth space"
+      ],
+      [
+        "A more massive Moon at the same distance would exert stronger tidal forces.",
+        "STRONGER TIDES",
+        "earth ocean moon"
+      ],
+      [
+        "Its orbit and Earth's rotation could evolve differently over long timescales.",
+        "A DIFFERENT DANCE",
+        "moon earth orbit"
+      ],
+      [
+        "The exact consequences would depend on how the extra mass appeared.",
+        "THE DETAILS MATTER",
+        "lunar moon surface"
+      ],
+      [
+        "Changing one celestial body can reshape an entire planetary partnership.",
+        "CONNECTED BY GRAVITY",
+        "earth moon planet"
+      ]
+    ]
+  },
+  {
+    "slug": "planet-black-hole",
+    "title": "What If a Planet Orbited a Black Hole?",
+    "beats": [
+      [
+        "Black holes can have stable orbits around them, just as other massive objects do.",
+        "ORBITING DARKNESS",
+        "black hole planet"
+      ],
+      [
+        "A planet far enough away would not be automatically swallowed.",
+        "GRAVITY FOLLOWS RULES",
+        "black hole accretion"
+      ],
+      [
+        "Light and heat would be major challenges without a nearby ordinary star.",
+        "WHERE IS THE SUNLIGHT?",
+        "black hole star"
+      ],
+      [
+        "An active accretion disk could create dangerous radiation.",
+        "DANGEROUS RADIATION",
+        "black hole disk"
+      ],
+      [
+        "Such a world would be extraordinary, but physics still sets the limits.",
+        "STRANGE BUT PHYSICAL",
+        "black hole galaxy"
+      ]
+    ]
+  },
+  {
+    "slug": "space-elevator",
+    "title": "What If We Built a Space Elevator?",
+    "beats": [
+      [
+        "A space elevator would use a very long tether extending far above Earth's surface.",
+        "A ROAD TO SPACE?",
+        "earth satellite orbit"
+      ],
+      [
+        "A counterweight and Earth's rotation could help keep the tether under tension.",
+        "TENSION HOLDS IT UP",
+        "earth orbital ring"
+      ],
+      [
+        "The material would need extraordinary strength compared with its weight.",
+        "MATERIALS ARE THE KEY",
+        "earth spacecraft"
+      ],
+      [
+        "Space debris, weather, and dynamic forces would complicate operation.",
+        "A TOUGH ENVIRONMENT",
+        "earth space station"
+      ],
+      [
+        "It remains a fascinating concept rather than a working transport system.",
+        "NOT BUILT YET",
+        "earth horizon space"
+      ]
+    ]
+  },
+  {
+    "slug": "neutron-star-nearby",
+    "title": "What If a Neutron Star Passed Near Our Solar System?",
+    "beats": [
+      [
+        "A neutron star packs more mass than the Sun into a city-sized object.",
+        "DENSE BEYOND BELIEF",
+        "neutron star"
+      ],
+      [
+        "Its gravitational effects would depend strongly on distance and speed.",
+        "DISTANCE DECIDES",
+        "star solar system"
+      ],
+      [
+        "A close pass could disturb planetary orbits and smaller icy bodies.",
+        "ORBITS DISTURBED",
+        "earth solar orbit"
+      ],
+      [
+        "Radiation could also matter if the star were an active pulsar.",
+        "RADIATION MATTERS",
+        "pulsar star"
+      ],
+      [
+        "Fortunately, an extremely close encounter is not something astronomers expect soon.",
+        "COSMICALLY UNLIKELY",
+        "milky way stars"
+      ]
+    ]
+  },
+  {
+    "slug": "moon-farther",
+    "title": "What If the Moon Moved Much Farther Away?",
+    "beats": [
+      [
+        "The Moon is slowly receding from Earth by a few centimeters per year.",
+        "A SLOW RETREAT",
+        "moon earth orbit"
+      ],
+      [
+        "A much more distant Moon would appear smaller in our sky.",
+        "A SMALLER MOON",
+        "moon night sky"
+      ],
+      [
+        "Its tidal influence would weaken, although the Sun would still produce tides.",
+        "WEAKER LUNAR TIDES",
+        "earth ocean moon"
+      ],
+      [
+        "Total solar eclipses would become less likely as its apparent size shrank.",
+        "ECLIPSES CHANGE",
+        "sun moon eclipse"
+      ],
+      [
+        "Earth and Moon would remain linked by gravity, even across greater distance.",
+        "STILL CONNECTED",
+        "earth moon planet"
+      ]
+    ]
+  },
+  {
+    "slug": "exoplanet-night",
+    "title": "What If a Planet Never Had Night?",
+    "beats": [
+      [
+        "A tidally locked planet keeps the same face toward its star.",
+        "ONE SIDE FACES THE STAR",
+        "exoplanet star"
+      ],
+      [
+        "One hemisphere could experience permanent daylight while the other stays dark.",
+        "ETERNAL DAY AND NIGHT",
+        "planet terminator"
+      ],
+      [
+        "Atmosphere and oceans, if present, might carry heat between the sides.",
+        "HEAT CAN MOVE",
+        "planet atmosphere"
+      ],
+      [
+        "Some regions near the day-night boundary could have moderate temperatures.",
+        "A TWILIGHT ZONE",
+        "exoplanet horizon"
+      ],
+      [
+        "Whether such a world is habitable depends on many factors beyond its orbit.",
+        "HABITABILITY IS COMPLEX",
+        "planet star space"
+      ]
+    ]
+  },
+  {
+    "slug": "mars-dust-storm",
+    "title": "What If a Global Dust Storm Covered Mars?",
+    "beats": [
+      [
+        "Martian winds can lift fine dust into enormous storms.",
+        "A PLANET OF DUST",
+        "mars dust storm"
+      ],
+      [
+        "Some storms grow large enough to affect much of the planet.",
+        "THE SKY TURNS HAZY",
+        "mars planet atmosphere"
+      ],
+      [
+        "Dust reduces sunlight reaching solar panels and can complicate missions.",
+        "ROVERS IN TROUBLE",
+        "mars rover planet"
+      ],
+      [
+        "Even when storms fade, dust can linger in the atmosphere.",
+        "DUST TAKES TIME",
+        "mars horizon"
+      ],
+      [
+        "Understanding this weather matters for future exploration.",
+        "PLANNING FOR STORMS",
+        "mars spacecraft"
+      ]
+    ]
+  },
+  {
+    "slug": "super-earth",
+    "title": "What If We Landed on a Super-Earth?",
+    "beats": [
+      [
+        "Super-Earths are planets more massive than Earth but lighter than Neptune.",
+        "A BIGGER KIND OF WORLD",
+        "exoplanet planet"
+      ],
+      [
+        "Some might be rocky, while others could have thick volatile-rich layers.",
+        "NOT ALL ROCKY",
+        "planet atmosphere"
+      ],
+      [
+        "Surface gravity could be stronger, depending on mass and radius.",
+        "HEAVIER STEPS",
+        "planet earth comparison"
+      ],
+      [
+        "A dense atmosphere might change weather and conditions for explorers.",
+        "DIFFERENT SKIES",
+        "exoplanet clouds"
+      ],
+      [
+        "We need better measurements before imagining any one world as another Earth.",
+        "KNOW THE PLANET FIRST",
+        "exoplanet star"
+      ]
+    ]
+  },
+  {
+    "slug": "sun-brighter",
+    "title": "What If the Sun Became Ten Percent Brighter?",
+    "beats": [
+      [
+        "A brighter Sun would deliver more energy to Earth.",
+        "MORE SOLAR ENERGY",
+        "sun earth planet"
+      ],
+      [
+        "Global temperatures and the water cycle would respond over time.",
+        "A WARMER WORLD",
+        "earth clouds sun"
+      ],
+      [
+        "Feedbacks involving clouds, ice, and oceans would complicate the outcome.",
+        "CLIMATE FEEDBACKS",
+        "earth polar ice"
+      ],
+      [
+        "The change would affect ecosystems differently across the planet.",
+        "LIFE FEELS THE CHANGE",
+        "earth blue planet"
+      ],
+      [
+        "The exact future would depend on how quickly the brightening happened.",
+        "SPEED MATTERS",
+        "sun solar system"
+      ]
+    ]
+  },
+  {
+    "slug": "moon-ice-mining",
+    "title": "What If We Mined Ice on the Moon?",
+    "beats": [
+      [
+        "Some permanently shadowed lunar craters may contain water ice.",
+        "ICE IN DARK CRATERS",
+        "moon lunar pole"
+      ],
+      [
+        "Water could support crews and potentially be split into hydrogen and oxygen.",
+        "A VALUABLE RESOURCE",
+        "moon spacecraft"
+      ],
+      [
+        "Finding and extracting that ice would be difficult in extreme cold.",
+        "MINING IN THE DARK",
+        "lunar crater"
+      ],
+      [
+        "Processing equipment would need power, protection, and careful planning.",
+        "ENGINEERING ON THE MOON",
+        "moon base"
+      ],
+      [
+        "Local resources might make future exploration more sustainable.",
+        "BUILDING FARTHER OUT",
+        "earth moon orbit"
+      ]
+    ]
+  }
+])
