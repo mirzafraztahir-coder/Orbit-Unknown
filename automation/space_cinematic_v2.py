@@ -145,16 +145,40 @@ def fetch_photo(query, used_ids, used_hashes, folder, number):
     if identifier in used_ids:
         raise RuntimeError("Duplicate 3D scene identifier")
     png = folder / f"render_{number:02d}.png"
-    command(["blender", "-b", "-t", "2", "--python",
-             "automation/render_scene_3d.py", "--",
-             "--query", query, "--number", str(number), "--output", str(png)])
-    if not png.is_file() or png.stat().st_size < 100000:
-        raise RuntimeError("Blender did not produce a valid scene: " + str(png))
+    # The second script is pinned to the last renderer that passed a full
+    # five-scene production and YouTube publication on 2026-10-23 PKT.
+    # A failed, missing, or corrupt primary render must never block a
+    # recoverable edition. Do not use external imagery or cached old videos.
+    renderers = (
+        ("automation/render_scene_3d.py", "Blender primary"),
+        ("automation/render_scene_3d_verified.py", "Blender verified fallback"),
+    )
+    failures = []
+    for script, renderer_name in renderers:
+        png.unlink(missing_ok=True)
+        try:
+            command(["blender", "-b", "-t", "2", "--python", script, "--",
+                     "--query", query, "--number", str(number), "--output", str(png)])
+            if not png.is_file() or png.stat().st_size < 100000:
+                raise RuntimeError("Missing or undersized 3D scene")
+            with Image.open(png) as image:
+                image.verify()
+            with Image.open(png) as image:
+                if image.size != (800, 1280):
+                    raise RuntimeError("Wrong 3D scene dimensions")
+            break
+        except (OSError, subprocess.CalledProcessError, RuntimeError) as exc:
+            failures.append(f"{renderer_name}: {exc}")
+            log(f"RENDERER WARNING: {renderer_name} failed; trying verified fallback if available")
+    else:
+        raise RuntimeError("Both original 3D renderers failed: " + " | ".join(failures))
+    if failures:
+        log(f"RENDERER RECOVERY: scene {number} rendered by {renderer_name}")
     used_ids.add(identifier)
     used_hashes.add(identifier)
     return png, {"nasa_id": identifier, "title": "Original Blender 3D astronomy scene",
                  "url": "locally-rendered", "query": query, "center": "Orbit Unknown",
-                 "license": "original", "renderer": "Blender"}
+                 "license": "original", "renderer": renderer_name}
 
 def photograph_canvas(photo, dest):
     # One photo per scene: crop to a tall cinematic frame, then restrained contrast/color grading.
