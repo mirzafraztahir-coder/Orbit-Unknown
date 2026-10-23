@@ -13,9 +13,9 @@ on:
     types: [completed]
     branches: [main]
   schedule:
-    # 02:40 AM PKT, recovery 03:00, 03:20 and 03:45 (UTC previous day).
-    - cron: "40 21 * * *"
-    - cron: "0,20,45 22 * * *"
+    # 09:45 AM PKT, recovery 10:00, 10:25 and 10:55.
+    - cron: "45 4 * * *"
+    - cron: "0,25,55 5 * * *"
     # 06:00 PM PKT, recovery 18:20, 18:40, 19:00, 20:00 and 21:00.
     - cron: "0,20,40 13 * * *"
     - cron: "0 14,15,16 * * *"
@@ -49,7 +49,7 @@ jobs:
           SLOT=""
           if [ "$EVENT_TYPE" = schedule ]; then
             case "$EVENT_CRON" in
-              "40 21 * * *"|"0,20,45 22 * * *") SLOT=morning ;;
+              "45 4 * * *"|"0,25,55 5 * * *") SLOT=morning ;;
               "0,20,40 13 * * *"|"0 14,15,16 * * *") SLOT=evening ;;
               *) echo "::error::Unexpected publishing schedule"; exit 1 ;;
             esac
@@ -68,8 +68,8 @@ jobs:
             "") echo "No qualifying new cinematic artifact from this event; skipping." ;;
             *) echo "::error::Unrecognized slot"; exit 1 ;;
           esac
-          if [ "$SLOT" = morning ] && [ "$CLOCK" -lt 0240 ]; then
-            echo "Morning publication opens at 02:40 PKT; not early."
+          if [ "$SLOT" = morning ] && [ "$CLOCK" -lt 0945 ]; then
+            echo "Morning publication opens at 09:45 PKT; not early."
             SLOT=""
           fi
           if [ "$SLOT" = evening ] && [ "$CLOCK" -lt 1800 ]; then
