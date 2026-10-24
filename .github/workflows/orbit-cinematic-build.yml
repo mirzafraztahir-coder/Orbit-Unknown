@@ -29,7 +29,7 @@ jobs:
   produce:
     name: Create and verify separate 40-second science video
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@v4
       - name: Resolve Pakistan-date morning or evening edition
@@ -87,7 +87,7 @@ jobs:
         if: steps.duplicate.outputs.skip == 'false'
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg fonts-dejavu-core blender libegl1 libgl1 libgl1-mesa-dri libopengl0 libxrender1 libxi6 libxkbcommon0 libsm6 libxext6
+          sudo apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core blender libegl1 libgl1 libgl1-mesa-dri libopengl0 libxrender1 libxi6 libxkbcommon0 libsm6 libxext6
           python -m pip install --upgrade pip
           pip install -r automation/requirements.txt "numpy==1.26.4" "edge-tts>=6.1,<8" "piper-tts>=1.2,<2"
       - name: Confirm Blender 3D renderer is available
