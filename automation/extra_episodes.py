@@ -772,3 +772,627 @@ EXTRA_TOPICS.extend([
     ]
   }
 ])
+
+# New original, locally rendered five-scene episodes. Appended without changing existing edition assignments.
+EXTRA_TOPICS.extend([
+  {
+    "slug": "earth-no-oceans",
+    "title": "What If Earth Had No Oceans?",
+    "beats": [
+      [
+        "Earth's oceans cover most of the planet and help regulate its climate.",
+        "OCEANS SHAPE EARTH",
+        "earth ocean planet"
+      ],
+      [
+        "Without oceans, the water cycle and global weather would be transformed.",
+        "THE WATER CYCLE CHANGES",
+        "earth clouds atmosphere"
+      ],
+      [
+        "Exposed seafloors would reveal vast mountain chains and deep basins.",
+        "A NEW LANDSCAPE",
+        "earth rocky terrain"
+      ],
+      [
+        "Life that depends on marine ecosystems would face enormous disruption.",
+        "LIFE UNDER PRESSURE",
+        "earth biosphere planet"
+      ],
+      [
+        "A dry Earth would be a profoundly different world, not simply a planet with more land.",
+        "A DIFFERENT PLANET",
+        "dry earth planet"
+      ]
+    ]
+  },
+  {
+    "slug": "mars-magnetic-field",
+    "title": "What If Mars Regained a Magnetic Field?",
+    "beats": [
+      [
+        "Mars once had a global magnetic field, but today it lacks a strong planetwide shield.",
+        "MARS LOST ITS SHIELD",
+        "mars planet"
+      ],
+      [
+        "A restored field could help deflect charged particles from the solar wind.",
+        "DEFLECTING SOLAR WIND",
+        "mars atmosphere space"
+      ],
+      [
+        "It would not instantly create breathable air or warm the surface.",
+        "NOT INSTANT TERRAFORMING",
+        "mars red landscape"
+      ],
+      [
+        "Atmospheric pressure and temperature would still require major changes.",
+        "A LONG ROAD AHEAD",
+        "mars polar ice"
+      ],
+      [
+        "Protecting an atmosphere is only one part of making another world habitable.",
+        "ONE PIECE OF THE PUZZLE",
+        "mars planet orbit"
+      ]
+    ]
+  },
+  {
+    "slug": "comet-moon-impact",
+    "title": "What If a Comet Hit the Moon?",
+    "beats": [
+      [
+        "Imagine an icy comet colliding with the Moon at enormous speed.",
+        "AN IMPACT ON THE MOON",
+        "moon lunar crater"
+      ],
+      [
+        "The impact would excavate rock and throw debris into space.",
+        "ROCK FLIES OUTWARD",
+        "moon impact debris"
+      ],
+      [
+        "The effects on Earth would depend on the impact size and debris trajectories.",
+        "DISTANCE AND SIZE MATTER",
+        "earth moon orbit"
+      ],
+      [
+        "The Moon has no thick atmosphere to slow incoming objects.",
+        "NO AIR TO SLOW IT",
+        "lunar surface craters"
+      ],
+      [
+        "Scientists study lunar craters to understand the history of impacts in our solar system.",
+        "CRATERS TELL STORIES",
+        "moon crater closeup"
+      ]
+    ]
+  },
+  {
+    "slug": "jupiter-as-star",
+    "title": "What If Jupiter Became a Star?",
+    "beats": [
+      [
+        "Jupiter is enormous for a planet, but far too light to sustain hydrogen fusion.",
+        "A GIANT PLANET",
+        "jupiter planet"
+      ],
+      [
+        "Becoming a true star would require roughly eighty times Jupiter's present mass.",
+        "MASS IS THE KEY",
+        "jupiter sun comparison"
+      ],
+      [
+        "Adding that much mass would dramatically change the solar system's gravity.",
+        "ORBITS WOULD CHANGE",
+        "solar system orbits"
+      ],
+      [
+        "A second luminous star would transform the light and heat reaching nearby worlds.",
+        "A NEW SOURCE OF LIGHT",
+        "binary star system"
+      ],
+      [
+        "Jupiter cannot simply ignite as it is today.",
+        "NOT A HIDDEN STAR",
+        "jupiter cloud bands"
+      ]
+    ]
+  },
+  {
+    "slug": "lunar-underground-city",
+    "title": "What If We Built a City Under the Moon?",
+    "beats": [
+      [
+        "The lunar surface faces radiation, vacuum, and extreme temperature swings.",
+        "A HARSH SURFACE",
+        "moon lunar base"
+      ],
+      [
+        "Underground shelters could use surrounding rock for extra shielding.",
+        "SHELTER IN ROCK",
+        "moon lava tube"
+      ],
+      [
+        "Crews would still need reliable air, water, food, and energy.",
+        "LIFE SUPPORT FIRST",
+        "lunar habitat interior"
+      ],
+      [
+        "Transporting materials and maintaining equipment would be a major challenge.",
+        "BUILDING FAR FROM HOME",
+        "moon rover habitat"
+      ],
+      [
+        "A lunar city is an engineering possibility, not a ready-made refuge.",
+        "AN ENGINEERING FRONTIER",
+        "moon earth horizon"
+      ]
+    ]
+  },
+  {
+    "slug": "saturn-no-moons",
+    "title": "What If Saturn Lost All Its Moons?",
+    "beats": [
+      [
+        "Saturn has a remarkable family of moons with very different surfaces.",
+        "A WORLD OF MOONS",
+        "saturn planet moons"
+      ],
+      [
+        "Removing them would change many gravitational interactions in its system.",
+        "GRAVITY REARRANGED",
+        "saturn orbit rings"
+      ],
+      [
+        "Some moons help shape the edges and gaps of Saturn's rings.",
+        "RINGS FEEL THE CHANGE",
+        "saturn rings closeup"
+      ],
+      [
+        "Saturn itself would remain a giant planet orbiting the Sun.",
+        "THE PLANET REMAINS",
+        "saturn golden planet"
+      ],
+      [
+        "The moon system reveals how gravity organizes matter over time.",
+        "MOONS MATTER",
+        "saturn icy moon"
+      ]
+    ]
+  },
+  {
+    "slug": "one-hour-earth-day",
+    "title": "What If Earth's Day Lasted One Hour?",
+    "beats": [
+      [
+        "Earth now completes a rotation in about twenty-four hours.",
+        "A FASTER EARTH",
+        "earth rotating planet"
+      ],
+      [
+        "A one-hour day would mean dramatically faster surface motion.",
+        "SPEEDING UP",
+        "earth equator planet"
+      ],
+      [
+        "The planet's shape and atmospheric circulation would change profoundly.",
+        "WEATHER REWRITTEN",
+        "earth atmosphere storms"
+      ],
+      [
+        "Such rapid rotation would place extraordinary demands on oceans and the crust.",
+        "FORCES ON THE PLANET",
+        "earth oceans orbit"
+      ],
+      [
+        "The familiar rhythm of sunrise and sunset would disappear.",
+        "A NEW DAILY RHYTHM",
+        "earth sunrise horizon"
+      ]
+    ]
+  },
+  {
+    "slug": "solar-sail-stars",
+    "title": "What If a Solar Sail Traveled Toward Another Star?",
+    "beats": [
+      [
+        "Light carries momentum, even though photons have no rest mass.",
+        "LIGHT CAN PUSH",
+        "sunlight spacecraft"
+      ],
+      [
+        "A very thin reflective sail can gain speed from that gentle pressure.",
+        "A SAIL IN SPACE",
+        "solar sail spacecraft"
+      ],
+      [
+        "Powerful directed light might accelerate a tiny probe much faster.",
+        "LASER-DRIVEN FLIGHT",
+        "spacecraft laser sail"
+      ],
+      [
+        "Interstellar distances remain vast and communication delays would be immense.",
+        "THE DISTANCE PROBLEM",
+        "milky way star field"
+      ],
+      [
+        "A solar sail could help explore new ways of reaching beyond our solar system.",
+        "A PATH TO THE STARS",
+        "star field spacecraft"
+      ]
+    ]
+  },
+  {
+    "slug": "earth-loses-atmosphere",
+    "title": "What If Earth Suddenly Lost Its Atmosphere?",
+    "beats": [
+      [
+        "Earth's atmosphere supplies pressure, breathable air, and protection from radiation.",
+        "OUR INVISIBLE BLANKET",
+        "earth atmosphere"
+      ],
+      [
+        "Without air, exposed liquid water would not behave as it does at sea level.",
+        "WATER UNDER VACUUM",
+        "earth ocean horizon"
+      ],
+      [
+        "Sound would no longer travel through empty air at the surface.",
+        "A SILENT WORLD",
+        "earth barren landscape"
+      ],
+      [
+        "Temperatures and radiation exposure would become extreme.",
+        "NO PROTECTIVE SKY",
+        "earth sun space"
+      ],
+      [
+        "The atmosphere is essential to nearly every familiar surface ecosystem.",
+        "AIR MAKES LIFE POSSIBLE",
+        "earth blue planet"
+      ]
+    ]
+  },
+  {
+    "slug": "venus-oceans",
+    "title": "What If Venus Had Oceans Again?",
+    "beats": [
+      [
+        "Venus is similar in size to Earth but has a much hotter surface.",
+        "EARTH'S HOT NEIGHBOR",
+        "venus planet"
+      ],
+      [
+        "Liquid oceans would require enormous changes in temperature and pressure.",
+        "COOLING IS ESSENTIAL",
+        "venus atmosphere"
+      ],
+      [
+        "Its thick carbon dioxide atmosphere drives a powerful greenhouse effect.",
+        "A THICK ATMOSPHERE",
+        "venus cloud planet"
+      ],
+      [
+        "Water alone would not make the planet safe for humans.",
+        "MORE THAN WATER",
+        "venus rocky surface"
+      ],
+      [
+        "The thought experiment reveals how strongly atmosphere and climate shape a world.",
+        "CLIMATE SHAPES WORLDS",
+        "venus earth comparison"
+      ]
+    ]
+  },
+  {
+    "slug": "saturn-ring-flight",
+    "title": "What If We Flew Through Saturn's Rings?",
+    "beats": [
+      [
+        "Saturn's rings look solid from far away, but they contain countless separate particles.",
+        "NOT A SOLID DISC",
+        "saturn rings"
+      ],
+      [
+        "Many particles are made mostly of water ice and range widely in size.",
+        "ICE IN ORBIT",
+        "saturn ice particles"
+      ],
+      [
+        "A spacecraft crossing the ring plane would need to avoid dangerous impacts.",
+        "A HAZARDOUS CROSSING",
+        "spacecraft saturn rings"
+      ],
+      [
+        "The gaps and structures in the rings reflect complex orbital interactions.",
+        "GRAVITY SCULPTS RINGS",
+        "saturn ring gap"
+      ],
+      [
+        "The rings are beautiful precisely because they are a dynamic system.",
+        "AN ORBITING DANCE",
+        "saturn planet rings"
+      ]
+    ]
+  },
+  {
+    "slug": "three-star-planet",
+    "title": "What If a Planet Had Three Suns?",
+    "beats": [
+      [
+        "Some star systems contain three stars bound by gravity.",
+        "A TRIPLE STAR SYSTEM",
+        "triple star system"
+      ],
+      [
+        "A planet could orbit one star or travel around a wider group.",
+        "COMPLICATED ORBITS",
+        "exoplanet stars"
+      ],
+      [
+        "Its sky might show multiple bright suns depending on the geometry.",
+        "MORE THAN ONE SUN",
+        "alien planet sunset"
+      ],
+      [
+        "Long-term stability would depend on the masses and separations of the stars.",
+        "GRAVITY DECIDES",
+        "star system orbit"
+      ],
+      [
+        "Multiple suns are possible, but the climate would be highly system dependent.",
+        "A COMPLEX SKY",
+        "exoplanet horizon stars"
+      ]
+    ]
+  },
+  {
+    "slug": "pluto-ocean",
+    "title": "What If Pluto Hides an Ocean?",
+    "beats": [
+      [
+        "Pluto is an icy dwarf planet far beyond Neptune.",
+        "A DISTANT ICY WORLD",
+        "pluto dwarf planet"
+      ],
+      [
+        "Some models suggest liquid water might persist deep beneath its frozen exterior.",
+        "A POSSIBLE HIDDEN OCEAN",
+        "pluto icy surface"
+      ],
+      [
+        "Internal heat and the properties of ice would help determine whether it survives.",
+        "HEAT BENEATH ICE",
+        "icy dwarf planet"
+      ],
+      [
+        "No mission has confirmed a present-day subsurface ocean there.",
+        "NOT YET CONFIRMED",
+        "pluto spacecraft"
+      ],
+      [
+        "Even distant small worlds may have surprisingly complex interiors.",
+        "SMALL WORLD BIG QUESTIONS",
+        "pluto charon orbit"
+      ]
+    ]
+  },
+  {
+    "slug": "asteroid-as-moon",
+    "title": "What If Earth Captured an Asteroid as a Moon?",
+    "beats": [
+      [
+        "Earth sometimes has brief gravitational encounters with small asteroids.",
+        "A NEW VISITOR",
+        "earth asteroid"
+      ],
+      [
+        "Under the right conditions, a small object can become temporarily captured.",
+        "A TEMPORARY MOON",
+        "asteroid earth orbit"
+      ],
+      [
+        "Its orbit would depend on gravity from Earth, the Moon, and the Sun.",
+        "A DELICATE ORBIT",
+        "earth moon asteroid"
+      ],
+      [
+        "A tiny captured object would not resemble our bright familiar Moon.",
+        "NOT A SECOND FULL MOON",
+        "moon earth night"
+      ],
+      [
+        "Tracking these visitors helps scientists understand near-Earth space.",
+        "WATCHING THE SKY",
+        "asteroid telescope space"
+      ]
+    ]
+  },
+  {
+    "slug": "solar-probe",
+    "title": "What If a Probe Flew Into the Sun?",
+    "beats": [
+      [
+        "The Sun has no solid surface where a spacecraft could land.",
+        "NO SOLID LANDING",
+        "sun solar corona"
+      ],
+      [
+        "As a probe approached, intense radiation and heat would challenge its shielding.",
+        "EXTREME HEAT",
+        "spacecraft near sun"
+      ],
+      [
+        "Solar gravity would accelerate it along its trajectory.",
+        "FALLING TOWARD THE SUN",
+        "sun spacecraft orbit"
+      ],
+      [
+        "Measurements near the corona can reveal how solar wind is generated.",
+        "SECRETS OF THE CORONA",
+        "sun coronal loops"
+      ],
+      [
+        "Exploring close to the Sun is possible, but diving deep into it would destroy ordinary hardware.",
+        "THE LIMITS OF A PROBE",
+        "solar plasma sun"
+      ]
+    ]
+  },
+  {
+    "slug": "rotating-space-habitat",
+    "title": "What If We Lived in a Rotating Space Habitat?",
+    "beats": [
+      [
+        "A spinning habitat could create an outward apparent force for its residents.",
+        "ARTIFICIAL GRAVITY",
+        "space station rotating ring"
+      ],
+      [
+        "The effect depends on the habitat's radius and rotation speed.",
+        "SIZE AND SPEED",
+        "rotating space habitat"
+      ],
+      [
+        "Air, water, shielding, and food production would still need engineered systems.",
+        "A CLOSED WORLD",
+        "space station interior"
+      ],
+      [
+        "Moving around inside a rotating habitat could feel unfamiliar.",
+        "STRANGE MOTION",
+        "space habitat corridor"
+      ],
+      [
+        "Such structures remain ambitious proposals rather than existing cities.",
+        "A FUTURE POSSIBILITY",
+        "space habitat earth orbit"
+      ]
+    ]
+  },
+  {
+    "slug": "moon-black-hole",
+    "title": "What If a Moon Orbited a Black Hole?",
+    "beats": [
+      [
+        "Black holes exert gravity like other objects of the same mass at a distance.",
+        "GRAVITY STILL WORKS",
+        "black hole accretion disk"
+      ],
+      [
+        "A moon could orbit one if its path stayed outside dangerous regions.",
+        "AN UNUSUAL ORBIT",
+        "moon black hole space"
+      ],
+      [
+        "Strong tidal forces could stretch and heat objects that approach too closely.",
+        "TIDAL FORCES",
+        "black hole gravity lens"
+      ],
+      [
+        "The environment would depend on the black hole's mass and surrounding matter.",
+        "THE DETAILS MATTER",
+        "black hole star field"
+      ],
+      [
+        "A black hole is not a magical vacuum cleaner swallowing everything nearby.",
+        "NOT A COSMIC VACUUM",
+        "black hole distant stars"
+      ]
+    ]
+  },
+  {
+    "slug": "earth-blue-star",
+    "title": "What If Earth Orbited a Blue Star?",
+    "beats": [
+      [
+        "Blue stars are generally hotter and often more massive than our Sun.",
+        "A HOTTER SUN",
+        "blue star space"
+      ],
+      [
+        "An Earthlike planet would need a different orbital distance for similar energy.",
+        "A DIFFERENT ORBIT",
+        "exoplanet blue star"
+      ],
+      [
+        "Massive blue stars tend to have much shorter lifetimes.",
+        "A SHORTER CLOCK",
+        "massive blue star"
+      ],
+      [
+        "Their ultraviolet radiation could pose additional challenges for atmospheres.",
+        "HARSH RADIATION",
+        "planet atmosphere star"
+      ],
+      [
+        "A bright blue sky from space would not guarantee a friendly world.",
+        "BEAUTY AND RISK",
+        "blue star planet"
+      ]
+    ]
+  },
+  {
+    "slug": "earth-no-clouds",
+    "title": "What If Earth Had No Clouds?",
+    "beats": [
+      [
+        "Clouds reflect sunlight and trap some outgoing heat.",
+        "CLOUDS CONTROL ENERGY",
+        "earth clouds"
+      ],
+      [
+        "Without them, the balance between warming and cooling would change.",
+        "CLIMATE REBALANCED",
+        "earth sun atmosphere"
+      ],
+      [
+        "Rainfall patterns would also be profoundly different.",
+        "A CHANGED WATER CYCLE",
+        "earth ocean rain"
+      ],
+      [
+        "The exact global temperature response would depend on many feedbacks.",
+        "COMPLEX FEEDBACKS",
+        "earth climate planet"
+      ],
+      [
+        "Those shifting white patterns are a vital part of Earth's climate system.",
+        "MORE THAN DECORATION",
+        "earth cloud cover orbit"
+      ]
+    ]
+  },
+  {
+    "slug": "galaxy-no-dark-matter",
+    "title": "What If Our Galaxy Had No Dark Matter?",
+    "beats": [
+      [
+        "Observations suggest the Milky Way contains much more gravitating matter than visible stars and gas.",
+        "HIDDEN MASS",
+        "milky way galaxy"
+      ],
+      [
+        "Dark matter helps explain how stars orbit far from the galactic center.",
+        "GALACTIC GRAVITY",
+        "spiral galaxy stars"
+      ],
+      [
+        "Removing it would radically change the galaxy's gravitational structure.",
+        "ORBITS WOULD SHIFT",
+        "galaxy star field"
+      ],
+      [
+        "Exactly how the system evolved would depend on when and how the mass disappeared.",
+        "TIMING MATTERS",
+        "milky way spiral arms"
+      ],
+      [
+        "Studying galaxy motions is one way astronomers investigate unseen matter.",
+        "READING THE MOTION",
+        "galaxy night sky"
+      ]
+    ]
+  }
+])
