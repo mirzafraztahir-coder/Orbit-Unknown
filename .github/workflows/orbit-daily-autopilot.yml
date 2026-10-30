@@ -184,6 +184,8 @@ jobs:
                   existing=json.loads(other.read_text())
               except (ValueError,UnicodeError):
                   continue
+              if existing.get("sha256")==qa.get("sha256"):
+                  raise SystemExit("QUALITY GATE: identical video checksum was already published in "+other.name)
               if existing.get("topic")==pkg.get("topic"):
                   raise SystemExit("QUALITY GATE: this science topic was already published in "+other.name)
           if not pkg.get("metadata",{}).get("title") or len(pkg.get("scenes",[]))!=5:
