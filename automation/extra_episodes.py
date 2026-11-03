@@ -680,62 +680,62 @@ EXTRA_TOPICS.extend([
   },
   {
     "slug": "super-earth",
-    "title": "What If We Landed on a Super-Earth?",
+    "title": "Could You Survive on a Super-Earth?",
     "beats": [
       [
-        "Super-Earths are planets more massive than Earth but lighter than Neptune.",
-        "A BIGGER KIND OF WORLD",
+        "Imagine landing on a giant world. Could your legs even lift you?",
+        "YOUR FIRST STEP COULD FEEL IMPOSSIBLE",
         "exoplanet planet"
       ],
       [
-        "Some might be rocky, while others could have thick volatile-rich layers.",
-        "NOT ALL ROCKY",
+        "Not every super-Earth has a solid surface. Some may be wrapped in thick gases.",
+        "WAIT: IS THERE EVEN GROUND?",
         "planet atmosphere"
       ],
       [
-        "Surface gravity could be stronger, depending on mass and radius.",
-        "HEAVIER STEPS",
+        "Gravity could crush your stamina, depending on the planet’s mass and size.",
+        "EVERY STEP FEELS HEAVIER",
         "planet earth comparison"
       ],
       [
-        "A dense atmosphere might change weather and conditions for explorers.",
-        "DIFFERENT SKIES",
+        "The sky could be alien. Thick clouds might hide the star above.",
+        "YOU MAY NEVER SEE THE SUN",
         "exoplanet clouds"
       ],
       [
-        "We need better measurements before imagining any one world as another Earth.",
-        "KNOW THE PLANET FIRST",
+        "Here is the twist: bigger does not always mean more Earth-like.",
+        "BIGGER DOES NOT MEAN HABITABLE",
         "exoplanet star"
       ]
     ]
   },
   {
     "slug": "sun-brighter",
-    "title": "What If the Sun Became Ten Percent Brighter?",
+    "title": "What If the Sun Got 10% Brighter Overnight?",
     "beats": [
       [
-        "A brighter Sun would deliver more energy to Earth.",
-        "MORE SOLAR ENERGY",
+        "Imagine waking up to a Sun ten percent brighter. What changes first?",
+        "THE SUN JUST GOT BRIGHTER",
         "sun earth planet"
       ],
       [
-        "Global temperatures and the water cycle would respond over time.",
-        "A WARMER WORLD",
+        "Earth absorbs more sunlight. Heat and evaporation begin to shift.",
+        "MORE HEAT MORE EVAPORATION",
         "earth clouds sun"
       ],
       [
-        "Feedbacks involving clouds, ice, and oceans would complicate the outcome.",
-        "CLIMATE FEEDBACKS",
+        "Melting ice and changing clouds could amplify or reduce the warming.",
+        "ICE AND CLOUDS CHANGE EVERYTHING",
         "earth polar ice"
       ],
       [
-        "The change would affect ecosystems differently across the planet.",
-        "LIFE FEELS THE CHANGE",
+        "Some ecosystems would struggle sooner than others. The effects would vary.",
+        "NOT EVERY PLACE WARMS EQUALLY",
         "earth blue planet"
       ],
       [
-        "The exact future would depend on how quickly the brightening happened.",
-        "SPEED MATTERS",
+        "A sudden change is especially disruptive. Exact outcomes remain uncertain.",
+        "HOW FAST IS THE REAL QUESTION",
         "sun solar system"
       ]
     ]
