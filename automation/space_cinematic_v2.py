@@ -295,16 +295,36 @@ def render_video(images,captions,folder):
             src=raw.convert("RGB")
         with Image.open(folder/f"overlay_{k+1:02d}.png") as raw_overlay:
             layer=raw_overlay.convert("RGBA")
+        # Refresh on-screen information every 1.6 seconds instead of holding a
+        # short caption for the entire eight-second scene. Five scene images stay
+        # intact; only text pacing and camera movement change.
+        headline=captions[k].upper().split()
+        chunks=[" ".join(headline[i:i+3]) for i in range(0,len(headline),3)]
+        if not chunks: chunks=["DISCOVER MORE"]
         for f in range(8*FPS):
             p=f/(8*FPS-1)
-            zoom=1+0.055*p
+            zoom=1+0.12*p
             crop_w=int(720/zoom);crop_h=int(1280/zoom)
             x=int((src.width-crop_w)*(0.4+0.2*p))
             y=int((src.height-crop_h)*(0.48+0.04*math.sin(p*math.pi)))
             x=max(0,min(x,src.width-crop_w))
             y=max(0,min(y,src.height-crop_h))
             img=src.crop((x,y,x+crop_w,y+crop_h)).resize((W,H),Image.Resampling.BICUBIC).convert("RGBA")
-            img.alpha_composite(layer)
+            # Five beats of on-screen text per eight-second scene (1.6s each).
+            # The original static overlay is intentionally replaced for faster
+            # reading; avoid flicker by keeping each phrase on screen 1.6s.
+            d=ImageDraw.Draw(img,"RGBA")
+            font=ImageFont.truetype(FONT,45)
+            label=chunks[min(4,int(f/(FPS*1.6)))%len(chunks)]
+            bbox=d.textbbox((0,0),label,font=font)
+            tw=bbox[2]-bbox[0]
+            while tw>590 and len(label)>5:
+                font=ImageFont.truetype(FONT,max(28,font.size-2))
+                bbox=d.textbbox((0,0),label,font=font);tw=bbox[2]-bbox[0]
+                if font.size<=28: break
+            d.rounded_rectangle((36,960,684,1080),radius=22,fill=(0,0,0,205))
+            d.text(((W-tw)/2,985),label,font=font,fill=(255,245,215,255))
+            d.rounded_rectangle((44,1100,44+int(630*(f+1)/(8*FPS)),1107),radius=3,fill=(255,193,75,240))
             img.convert("RGB").save(frame_folder/f"frame_{k*8*FPS+f:05d}.jpg",quality=86)
     out=ROOT/"latest.mp4"
     command(["ffmpeg","-y","-loglevel","error",
