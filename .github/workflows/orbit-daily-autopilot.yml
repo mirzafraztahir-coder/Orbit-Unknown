@@ -13,12 +13,14 @@ on:
     types: [completed]
     branches: [main]
   schedule:
-    # 09:45 AM PKT, recovery 10:00, 10:25 and 10:55.
-    - cron: "45 4 * * *"
-    - cron: "0,25,55 5 * * *"
-    # 06:00 PM PKT, recovery 18:20, 18:40, 19:00, 20:00 and 21:00.
-    - cron: "0,20,40 13 * * *"
-    - cron: "0 14,15,16 * * *"
+    # 07:00 AM PKT, retries at 07:20, 07:40, 08:00, 08:30 and 09:00.
+    - cron: "0,20,40 2 * * *"
+    - cron: "0,30 3 * * *"
+    - cron: "0 4 * * *"
+    # 08:00 PM PKT, retries at 20:20, 20:40, 21:00, 21:30 and 22:00.
+    - cron: "0,20,40 15 * * *"
+    - cron: "0,30 16 * * *"
+    - cron: "0 17 * * *"
 permissions:
   contents: write
   actions: read
@@ -49,8 +51,8 @@ jobs:
           SLOT=""
           if [ "$EVENT_TYPE" = schedule ]; then
             case "$EVENT_CRON" in
-              "45 4 * * *"|"0,25,55 5 * * *") SLOT=morning ;;
-              "0,20,40 13 * * *"|"0 14,15,16 * * *") SLOT=evening ;;
+              "0,20,40 2 * * *"|"0,30 3 * * *"|"0 4 * * *") SLOT=morning ;;
+              "0,20,40 15 * * *"|"0,30 16 * * *"|"0 17 * * *") SLOT=evening ;;
               *) echo "::error::Unexpected publishing schedule"; exit 1 ;;
             esac
           elif [ "$EVENT_TYPE" = workflow_dispatch ]; then
@@ -68,12 +70,12 @@ jobs:
             "") echo "No qualifying new cinematic artifact from this event; skipping." ;;
             *) echo "::error::Unrecognized slot"; exit 1 ;;
           esac
-          if [ "$SLOT" = morning ] && [ "$CLOCK" -lt 0945 ]; then
-            echo "Morning publication opens at 09:45 PKT; not early."
+          if [ "$SLOT" = morning ] && [ "$CLOCK" -lt 0700 ]; then
+            echo "Morning publication opens at 07:00 PKT; not early."
             SLOT=""
           fi
-          if [ "$SLOT" = evening ] && [ "$CLOCK" -lt 1800 ]; then
-            echo "Evening publication opens at 18:00 PKT; not early."
+          if [ "$SLOT" = evening ] && [ "$CLOCK" -lt 2000 ]; then
+            echo "Evening publication opens at 20:00 PKT; not early."
             SLOT=""
           fi
           echo "date=$DAY" >> "$GITHUB_OUTPUT"
