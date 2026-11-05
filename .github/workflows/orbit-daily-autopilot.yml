@@ -30,7 +30,8 @@ concurrency:
 
 jobs:
   publish-verified-edition:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    # Owner-requested publication pause on 2026-11-05. Do not upload until explicitly resumed.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
