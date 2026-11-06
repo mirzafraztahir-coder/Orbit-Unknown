@@ -30,8 +30,6 @@ concurrency:
 
 jobs:
   publish-verified-edition:
-    # Owner-requested publication pause on 2026-11-05. Do not upload until explicitly resumed.
-    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
