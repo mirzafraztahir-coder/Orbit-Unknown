@@ -27,8 +27,6 @@ concurrency:
   cancel-in-progress: false
 jobs:
   produce:
-    # Owner-requested production pause on 2026-11-05.
-    if: ${{ false }}
     name: Create and verify separate 40-second science video
     runs-on: ubuntu-latest
     timeout-minutes: 100
