@@ -19,8 +19,8 @@ bpy.ops.object.delete(use_global=False)
 scene=bpy.context.scene
 scene.render.engine="CYCLES"
 scene.cycles.device="CPU"
-scene.cycles.samples=32
-scene.cycles.use_denoising=False
+scene.cycles.samples=40
+scene.cycles.use_denoising=True
 scene.render.resolution_x=800
 scene.render.resolution_y=1280
 scene.render.resolution_percentage=100
@@ -84,8 +84,26 @@ def noise_surface(mat,scale=3.0,detail=4.0):
     links.new(ramp.outputs["Color"],nodes.get("Principled BSDF").inputs["Base Color"])
 
 palette=(0.55,0.23,0.12) if "mars" in q else (0.68,0.55,0.34) if "saturn" in q else (0.64,0.44,0.25) if "jupiter" in q else (0.12,0.32,0.76) if "neptune" in q else (0.9,0.48,0.08) if any(t in q for t in ["sun","star","supernova"]) else (0.28,0.48,0.72)
-planetmat=material("Procedural planetary terrain",palette,roughness=0.87)
-noise_surface(planetmat,scale=2.0+0.3*a.number)
+planetmat=material("Procedural planetary terrain",palette,roughness=0.67)
+noise_surface(planetmat,scale=3.4+0.5*a.number)
+# Topic-specific procedural cloud bands and color variation; no downloaded media.
+if any(t in q for t in ("jupiter","saturn","neptune","uranus","gas giant","storm")):
+    nodes=planetmat.node_tree.nodes
+    links=planetmat.node_tree.links
+    tex=nodes.new("ShaderNodeTexNoise")
+    tex.inputs["Scale"].default_value=3.5
+    tex.inputs["Detail"].default_value=5
+    coord=nodes.new("ShaderNodeTexCoord")
+    mapping=nodes.new("ShaderNodeVectorMath")
+    mapping.operation="MULTIPLY"
+    mapping.inputs[1].default_value=(0.65,0.65,7.0)
+    links.new(coord.outputs["Generated"],mapping.inputs[0])
+    links.new(mapping.outputs["Vector"],tex.inputs["Vector"])
+    ramp=nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color=(*tuple(max(0.015,c*0.3) for c in palette),1)
+    ramp.color_ramp.elements[1].color=(*tuple(min(1,c*1.55+0.09) for c in palette),1)
+    links.new(tex.outputs["Fac"],ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"],nodes.get("Principled BSDF").inputs["Base Color"])
 space=material("Star light",(0.8,0.9,1),emission=8)
 gold=material("Warm metallic ring",(0.72,0.54,0.28),metallic=0.8,roughness=0.3)
 dark=material("Event horizon",(0.001,0.002,0.006),roughness=0.1)
@@ -148,6 +166,35 @@ elif a.number == 5:
         sphere("Distant moon %02d"%j,
                (-3.3+j*2.6,2.4-j*0.5,-2.5-j),
                0.23+j*0.12,icy)
+# Narrative-specific silhouettes add identifiable visual variety beyond five generic globes.
+# Every shot is freshly generated from its own query and beat number.
+if any(t in q for t in ("comet","asteroid","meteor","debris","collision","impact")):
+    rock=material("Dark mineral asteroid",(0.22,0.19,0.17),roughness=0.95)
+    for j in range(8 if a.number==3 else 3):
+        angle=j*2.399+a.number
+        rad=2.5+0.35*j
+        obj=sphere("Irregular impact debris %02d"%j,
+                   (rad*math.cos(angle),rad*math.sin(angle),rng.uniform(-1.5,1.5)),
+                   rng.uniform(0.18,0.42),rock,segments=9,rings=6)
+        obj.scale=(1.2,0.72,0.85)
+if any(t in q for t in ("ice","frozen","glacier","ocean","water")) and not is_sun:
+    ice_glow=material("Frozen water blue",(0.18,0.65,0.95),metallic=0.25,roughness=0.2,emission=0.12)
+    for j in range(6):
+        theta=j*math.tau/6+a.number*0.19
+        sphere("Glinting ice fragment %02d"%j,
+               (3.3*math.cos(theta),3.3*math.sin(theta),rng.uniform(-0.6,0.6)),
+               0.10+rng.random()*0.12,ice_glow,segments=12,rings=8)
+if any(t in q for t in ("spacecraft","satellite","rocket","station","astronaut")) and a.number != 4:
+    hull=material("Spacecraft polished metal",(0.52,0.63,0.73),metallic=0.75,roughness=0.22)
+    bpy.ops.mesh.primitive_cone_add(vertices=20,radius1=0.27,radius2=0.04,depth=1.3,location=(2.6,-1.4,0.4))
+    bpy.context.object.data.materials.append(hull)
+if any(t in q for t in ("galaxy","nebula","supernova","explosion")):
+    cloud=material("Volumetric-looking emission filaments",(0.27,0.08,0.64),emission=1.6)
+    for j in range(12):
+        theta=j*math.tau/12
+        ring("Nebula plasma filament %02d"%j,
+             (0.1*math.sin(j),0.1*math.cos(j),-1.5),
+             2.4+j*0.11,0.018,cloud,rotation=(theta*0.16,theta*0.09,theta))
 # Distant stars are actual 3D emissive objects with parallax.
 for i in range(125):
     x=rng.uniform(-24,24);y=rng.uniform(-30,30);z=rng.uniform(-23,-12)
