@@ -1,4 +1,5 @@
 """Orbit Unknown: locally generated original astronomy illustrations, 40-second cinematic video.
+Recovery note: push-triggered build for the 2026-11-07 evening edition after missing scheduled production.
 No manual uploads, no legacy cartoon templates, and no publication in this script.
 Illustrations depict hypothetical scenarios and are not real footage.
 """
