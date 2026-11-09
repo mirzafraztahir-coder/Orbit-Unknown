@@ -10,7 +10,8 @@ on:
         options: [morning, evening]
   schedule:
     - cron: "0,40 3 * * *"    # 08:00 and 08:40 PKT, morning primary and backup
-    - cron: "10 4 * * *"      # 09:10 PKT, morning recovery
+    - cron: "10,55 4 * * *"   # 09:10 and 09:55 PKT, morning recovery
+    - cron: "25 5 * * *"      # 10:25 PKT, final pre-publication recovery
     - cron: "0,40 10 * * *"   # 15:00 and 15:40 PKT, evening primary and backup
     - cron: "10 11 * * *"     # 16:10 PKT, evening recovery
   push:
@@ -45,7 +46,7 @@ jobs:
           case "$EVENT_TYPE" in
             schedule)
               case "$EVENT_CRON" in
-                "0,40 3 * * *"|"10 4 * * *") SLOT=morning ;;
+                "0,40 3 * * *"|"10,55 4 * * *"|"25 5 * * *") SLOT=morning ;;
                 "0,40 10 * * *"|"10 11 * * *") SLOT=evening ;;
                 *) echo "::error::Unknown production schedule"; exit 1 ;;
               esac ;;
