@@ -1,4 +1,5 @@
 name: Orbit Cinematic Build
+# 2026-11-10 morning recovery: scheduled production did not trigger by 10:58 PKT.
 on:
   workflow_dispatch:
     inputs:
