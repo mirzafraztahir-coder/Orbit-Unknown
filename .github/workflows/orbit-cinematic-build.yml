@@ -1,5 +1,5 @@
 name: Orbit Cinematic Build
-# 2026-11-10 evening recovery: ensure the 20:00 PKT edition is built and validated.
+# 2026-11-11 morning recovery: trigger pre-11:30 PKT production after missed scheduled builds.
 on:
   workflow_dispatch:
     inputs:
