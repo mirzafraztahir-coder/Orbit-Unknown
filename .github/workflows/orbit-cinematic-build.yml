@@ -1,5 +1,5 @@
 name: Orbit Cinematic Build
-# 2026-11-12 evening recovery: GitHub schedule delays left evening edition without a validated artifact; push triggers fresh evening production.
+# 2026-11-13 morning recovery: trigger morning production after delayed scheduled builds; retain validation and duplicate safeguards.
 on:
   workflow_dispatch:
     inputs:
