@@ -1,5 +1,5 @@
 name: Orbit Cinematic Build
-# 2026-11-13 morning recovery: trigger morning production after delayed scheduled builds; retain validation and duplicate safeguards.
+# 2026-11-13 evening recovery: trigger evening production; retain validation and duplicate safeguards.
 on:
   workflow_dispatch:
     inputs:
