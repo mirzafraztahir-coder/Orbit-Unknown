@@ -1,0 +1,1 @@
+Recovery request for 2026-11-14 morning edition at 10:58 PKT. Build only if no validated current-edition artifact or publication receipt exists. Preserve original Blender rendering, technical quality gates, licensing and duplicate safeguards.
