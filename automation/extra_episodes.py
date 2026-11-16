@@ -1394,7 +1394,7 @@ EXTRA_TOPICS.extend([
         "galaxy night sky"
       ]
     ]
-  }
+  },
     {"slug": "rogue-planet", "title": "What If a Rogue Planet Entered Our Solar System?", "beats": [
         ("A planet with no parent star could wander through the darkness between stars.", "A COSMIC POSSIBILITY", "What If a Rogue Planet Entered Our Solar System? wide space"),
         ("Its gravity could disturb distant icy bodies long before we ever saw it.", "THE PHYSICS MATTERS", "What If a Rogue Planet Entered Our Solar System? surface detail"),
