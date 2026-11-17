@@ -1,5 +1,5 @@
 name: Orbit Cinematic Build
-# 2026-11-16 evening recovery: rebuild current Pakistan-time evening edition after syntax repair; retain validation and duplicate safeguards.
+# 2026-11-17 morning recovery: request current morning edition; retain original Blender, media QA and duplicate safeguards.
 on:
   workflow_dispatch:
     inputs:
