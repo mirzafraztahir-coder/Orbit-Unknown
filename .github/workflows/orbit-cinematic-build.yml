@@ -1,5 +1,5 @@
 name: Orbit Cinematic Build
-# 2026-11-20 evening recovery: request today's evening edition; retain original Blender, media QA and duplicate safeguards.
+# 2026-11-21 morning recovery: request today's morning edition; retain original Blender, media QA and duplicate safeguards.
 on:
   workflow_dispatch:
     inputs:
