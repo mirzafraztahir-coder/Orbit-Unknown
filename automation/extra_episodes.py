@@ -1508,3 +1508,56 @@ EXTRA_TOPICS.extend([
         ("Discovering an ocean moon around another star would open a new frontier.", "SPACE HAS SURPRISES", "What If an Exomoon Had an Ocean? cinematic panorama"),
     ]},
 ])
+
+# New original, distinct episodes for November 23 onward; no recycled footage.
+EXTRA_TOPICS.extend([
+    {"slug": "titan-methane-rain", "title": "What If It Rained Methane on Titan?", "beats": [
+        ("Titan, Saturn's largest moon, has clouds and lakes made partly of hydrocarbons.", "ALIEN RAIN", "Titan Saturn orange moon"),
+        ("Its thick nitrogen atmosphere supports a methane-based weather cycle.", "A THICK ATMOSPHERE", "Titan methane lake clouds"),
+        ("Methane can evaporate, condense into clouds, and fall as rain.", "METHANE CLOUDS", "Titan rain atmosphere"),
+        ("The surface is so cold that water behaves more like rock than liquid.", "FROZEN WATER ROCK", "Titan frozen landscape"),
+        ("Titan offers a remarkable example of weather beyond Earth.", "WEATHER BEYOND EARTH", "Titan Saturn spacecraft"),
+    ]},
+    {"slug": "europa-ice-cracks", "title": "What If We Looked Beneath Europa's Ice?", "beats": [
+        ("Europa is an icy moon of Jupiter with a fractured bright surface.", "FRACTURED ICE", "Europa Jupiter icy moon"),
+        ("Evidence suggests a global salty ocean lies beneath its ice shell.", "A HIDDEN OCEAN", "Europa ice cracks closeup"),
+        ("Jupiter's gravity flexes Europa and helps provide internal heating.", "TIDAL HEATING", "Europa Jupiter tidal forces"),
+        ("Exploring the ocean would demand a probe capable of surviving thick ice and radiation.", "A DIFFICULT MISSION", "Europa robotic ice probe"),
+        ("Europa is promising for habitability studies, but life has not been confirmed.", "LIFE NOT CONFIRMED", "Europa ocean moon space"),
+    ]},
+    {"slug": "mars-sunset", "title": "What If You Watched a Sunset on Mars?", "beats": [
+        ("Mars can show a bluish glow close to the setting Sun.", "A BLUE SUNSET", "Mars blue sunset horizon"),
+        ("Fine dust in the thin atmosphere scatters sunlight differently from Earth's sky.", "DUST SCATTERS LIGHT", "Mars dust atmosphere sunlight"),
+        ("The rest of the Martian sky can appear butterscotch during daylight.", "A RUST COLORED SKY", "Mars rocky landscape sky"),
+        ("Dust storms and atmospheric conditions can dramatically alter the view.", "WEATHER CHANGES THE VIEW", "Mars dust storm sunset"),
+        ("A Martian sunset would feel familiar in timing but alien in color.", "AN ALIEN EVENING", "Mars rover sunset"),
+    ]},
+    {"slug": "jupiter-aurora", "title": "What If We Saw Jupiter's Auroras Up Close?", "beats": [
+        ("Jupiter has powerful auroras near its magnetic poles.", "GIANT AURORAS", "Jupiter polar aurora"),
+        ("Charged particles travel along magnetic field lines into the upper atmosphere.", "MAGNETIC PARTICLES", "Jupiter magnetic field lines"),
+        ("Its moon Io supplies material that helps drive parts of this activity.", "IO FEEDS THE SYSTEM", "Io Jupiter plasma torus"),
+        ("The resulting light can include ultraviolet wavelengths invisible to our eyes.", "INVISIBLE LIGHT", "Jupiter ultraviolet aurora"),
+        ("Jupiter's auroras reveal a vast and energetic magnetic environment.", "A MAGNETIC GIANT", "Jupiter planet glowing pole"),
+    ]},
+    {"slug": "lunar-lava-tube", "title": "What If We Built Inside a Lunar Lava Tube?", "beats": [
+        ("Ancient volcanic activity may have left underground tunnels on the Moon.", "TUNNELS ON THE MOON", "Moon volcanic lava tube"),
+        ("Some candidate pits could connect to larger sheltered spaces.", "HIDDEN CAVERNS", "Moon lunar pit opening"),
+        ("Subsurface habitats might reduce exposure to radiation and micrometeorites.", "NATURAL SHIELDING", "lunar underground habitat"),
+        ("Engineers would still need to verify stability and supply breathable air.", "HABITAT CHALLENGES", "Moon cave engineering habitat"),
+        ("Lunar lava tubes are intriguing possibilities, not ready-made homes.", "NOT READY MADE HOMES", "Moon surface underground tunnel"),
+    ]},
+    {"slug": "trappist-world", "title": "What If We Visited the TRAPPIST-1 Planets?", "beats": [
+        ("TRAPPIST-1 is a small cool star with seven known roughly Earth-sized planets.", "SEVEN SMALL WORLDS", "TRAPPIST-1 seven planets"),
+        ("Several orbit much closer to their star than Mercury orbits the Sun.", "TIGHT ORBITS", "TRAPPIST-1 compact orbits"),
+        ("Their potential atmospheres remain an important research question.", "UNKNOWN ATMOSPHERES", "TRAPPIST-1 exoplanet atmosphere"),
+        ("Tidal locking could shape daylight patterns and climate on some of these worlds.", "UNUSUAL DAYLIGHT", "tidally locked exoplanet"),
+        ("Finding an Earth-sized planet does not automatically mean finding another Earth.", "NOT ANOTHER EARTH", "TRAPPIST-1 star planets"),
+    ]},
+    {"slug": "saturn-hexagon", "title": "What If You Flew Over Saturn's Hexagon?", "beats": [
+        ("Saturn's north pole hosts a striking six-sided atmospheric jet stream.", "A SIX SIDED STORM", "Saturn north pole hexagon"),
+        ("The hexagon is a giant weather pattern, not a solid geometric structure.", "NOT A SOLID SHAPE", "Saturn hexagon clouds"),
+        ("Fast winds flow around the polar region while clouds evolve inside.", "FAST POLAR WINDS", "Saturn polar jet stream"),
+        ("Scientists study how rotating fluids can maintain such unusual shapes.", "FLUID DYNAMICS", "Saturn fluid vortex"),
+        ("Saturn's atmosphere creates patterns far stranger than ordinary storms.", "WEATHER AS ART", "Saturn ringed planet pole"),
+    ]},
+])
