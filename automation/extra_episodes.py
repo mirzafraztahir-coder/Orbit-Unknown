@@ -1561,3 +1561,193 @@ EXTRA_TOPICS.extend([
         ("Saturn's atmosphere creates patterns far stranger than ordinary storms.", "WEATHER AS ART", "Saturn ringed planet pole"),
     ]},
 ])
+
+# Original November 26 episode reserve.
+EXTRA_TOPICS.extend([
+  {
+    "slug": "io-volcanic-world",
+    "title": "What If You Watched a Volcano on Io?",
+    "beats": [
+      [
+        "Io is the most volcanically active world known in our solar system.",
+        "A WORLD OF VOLCANOES",
+        "Io Jupiter volcanic moon"
+      ],
+      [
+        "Jupiter and neighboring moons tug on Io, flexing its rocky interior.",
+        "GRAVITY HEATS ROCK",
+        "Io Jupiter tidal deformation"
+      ],
+      [
+        "Some eruptions send enormous plumes of sulfur compounds above the surface.",
+        "PLUMES ABOVE IO",
+        "Io volcanic plume surface"
+      ],
+      [
+        "Fresh lava and sulfur deposits continually repaint the landscape.",
+        "A CHANGING SURFACE",
+        "Io sulfur lava landscape"
+      ],
+      [
+        "Intense radiation around Jupiter makes visiting this fiery moon especially dangerous.",
+        "A HOSTILE BEAUTY",
+        "Io Jupiter radiation space"
+      ]
+    ]
+  },
+  {
+    "slug": "ganymede-magnetic",
+    "title": "Why Does Ganymede Have Its Own Magnetic Field?",
+    "beats": [
+      [
+        "Ganymede is the largest moon in our solar system, bigger than Mercury.",
+        "A GIANT MOON",
+        "Ganymede Jupiter moon"
+      ],
+      [
+        "Unlike other known moons, it generates its own intrinsic magnetic field.",
+        "A MOON WITH A SHIELD",
+        "Ganymede magnetic field"
+      ],
+      [
+        "A conducting liquid metallic core is thought to help generate that field.",
+        "A HIDDEN METALLIC CORE",
+        "Ganymede interior core"
+      ],
+      [
+        "Its magnetic environment interacts with the much larger field of Jupiter.",
+        "TWO MAGNETIC WORLDS",
+        "Ganymede Jupiter magnetosphere"
+      ],
+      [
+        "Studying this moon helps reveal how planetary interiors create magnetic fields.",
+        "A NATURAL LABORATORY",
+        "Ganymede icy moon orbit"
+      ]
+    ]
+  },
+  {
+    "slug": "iapetus-ridge",
+    "title": "Why Does Iapetus Have a Giant Ridge?",
+    "beats": [
+      [
+        "Saturn's moon Iapetus has a remarkable mountain ridge along much of its equator.",
+        "A MOON WITH A RIDGE",
+        "Iapetus Saturn moon equator"
+      ],
+      [
+        "Parts of the ridge rise many kilometers above the surrounding terrain.",
+        "MOUNTAINS IN SPACE",
+        "Iapetus equatorial mountains"
+      ],
+      [
+        "One hypothesis suggests material from an ancient ring fell onto the moon.",
+        "AN ANCIENT RING?",
+        "Iapetus hypothetical debris ring"
+      ],
+      [
+        "Other explanations involve the moon's early rotation and internal evolution.",
+        "A DIFFERENT POSSIBILITY",
+        "Iapetus rotating icy moon"
+      ],
+      [
+        "Its origin remains uncertain, making Iapetus a fascinating geological puzzle.",
+        "A COSMIC MYSTERY",
+        "Iapetus Saturn distant moon"
+      ]
+    ]
+  },
+  {
+    "slug": "mars-olympus",
+    "title": "What If You Climbed Olympus Mons?",
+    "beats": [
+      [
+        "Olympus Mons on Mars is the largest known volcano in our solar system.",
+        "A COLOSSAL VOLCANO",
+        "Mars Olympus Mons volcano"
+      ],
+      [
+        "Its summit rises roughly twenty two kilometers above the Martian reference level.",
+        "HIGH ABOVE MARS",
+        "Mars Olympus Mons summit"
+      ],
+      [
+        "Repeated lava flows built an immense shield with relatively gentle slopes.",
+        "LAYERS OF LAVA",
+        "Mars shield volcano landscape"
+      ],
+      [
+        "Mars lacks Earthlike moving tectonic plates, allowing volcanoes to grow in place.",
+        "A STATIONARY VOLCANO",
+        "Mars volcanic crust"
+      ],
+      [
+        "Even near the summit, a climber would need protection from the thin atmosphere.",
+        "NO ORDINARY HIKE",
+        "Mars mountain horizon astronaut"
+      ]
+    ]
+  },
+  {
+    "slug": "mercury-sunrise",
+    "title": "Why Can the Sun Reverse Direction on Mercury?",
+    "beats": [
+      [
+        "On Mercury, the Sun can appear to stop and reverse its motion in certain locations.",
+        "A BACKWARD SUNRISE",
+        "Mercury surface sun horizon"
+      ],
+      [
+        "Mercury rotates three times for every two trips around the Sun.",
+        "THREE SPINS TWO ORBITS",
+        "Mercury solar orbit"
+      ],
+      [
+        "Its elliptical orbit makes it travel faster when it approaches the Sun.",
+        "SPEED CHANGES",
+        "Mercury elliptical orbit sun"
+      ],
+      [
+        "Near closest approach, orbital motion can briefly outweigh the apparent effect of rotation.",
+        "THE SUN REVERSES",
+        "Mercury sun sky"
+      ],
+      [
+        "This unusual sunrise is a beautiful consequence of orbital mechanics.",
+        "A STRANGE CELESTIAL CLOCK",
+        "Mercury crater sunrise"
+      ]
+    ]
+  },
+  {
+    "slug": "uranus-rings",
+    "title": "What Do the Dark Rings of Uranus Look Like?",
+    "beats": [
+      [
+        "Uranus has a system of narrow rings that are much darker than Saturn's bright rings.",
+        "DARK RINGS",
+        "Uranus narrow rings"
+      ],
+      [
+        "Their particles reflect little sunlight, making them difficult to see.",
+        "FAINT IN SUNLIGHT",
+        "Uranus dark ring particles"
+      ],
+      [
+        "Small moons can influence the structure of some rings through gravity.",
+        "MOONS SHAPE RINGS",
+        "Uranus shepherd moons"
+      ],
+      [
+        "Because Uranus is strongly tilted, the ring system changes orientation as seen from Earth.",
+        "A TILTED RING SYSTEM",
+        "Uranus tilted orbit rings"
+      ],
+      [
+        "These subtle rings reveal that planetary ring systems come in many forms.",
+        "NOT JUST SATURN",
+        "Uranus planet rings space"
+      ]
+    ]
+  }
+])
